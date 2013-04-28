@@ -104,4 +104,4 @@ Currently, the best thing you can do to help is to check back later for more upd
 [similar concerns about SWIG]: http://sage.math.washington.edu/tmp/sage-2.8.12.alpha0/doc/prog/node36.html
 [SWIG]: http://www.swig.org/
 [ticalc.org Package Manager]: http://www.ticalc.org/archives/files/fileinfo/433/43348.html
-[TiLP Framework]: http://lpg.ticalc.org/prj_tilp/
+[TiLP Framework]: http://lpg.ticalc.org/prj_tilp/architecture.html
