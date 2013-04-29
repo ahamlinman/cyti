@@ -23,15 +23,14 @@ You must have Cython installed for whichever version of Python you use. Visit [C
 Using CyTI
 ----------
 
-Here is an example of scanning for calculators connected to your computer:
+Here is an example of sending the "M" key to a connected calculator (WARNING: Does not work with a direct USB connection):
 
     import cyti
-    scan_result = cyti.scan_for_devices()
-    if scan_result == None:
-        print("No devices found.")
-    else:
-        print("Devices found on (cable, port):")
-        print(scan_result)
+    connections = cyti.find_connections()
+    connection = connections[0]
+    connection.connect()
+    connection.send_bytes(b'\x23\x87\xA6\x00')
+    response = connection.receive_bytes(8)
 
 Introduction to CyTI
 ====================
