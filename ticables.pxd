@@ -64,27 +64,27 @@ cdef extern from "ticables.h":
     char* ticables_version_get()
 
     CableHandle* ticables_handle_new(CableModel model, CablePort port)
-    int ticables_handle_del(CableHandle* handle)
+    int ticables_handle_del(CableHandle* cable_handle)
 
-    int ticables_options_set_timeout(CableHandle* handle, int timeout)
-    int ticables_options_set_delay(CableHandle* handle, int delay)
+    int ticables_options_set_timeout(CableHandle* cable_handle, int timeout)
+    int ticables_options_set_delay(CableHandle* cable_handle, int delay)
 
-    CableModel ticables_get_model(CableHandle* handle)
-    CablePort ticables_get_port(CableHandle* handle)
+    CableModel ticables_get_model(CableHandle* cable_handle)
+    CablePort ticables_get_port(CableHandle* cable_handle)
 
-    int ticables_cable_open(CableHandle* handle)
-    int ticables_cable_close(CableHandle* handle)
+    int ticables_cable_open(CableHandle* cable_handle)
+    int ticables_cable_close(CableHandle* cable_handle)
 
-    int ticables_cable_reset(CableHandle* handle)
-    int ticables_cable_probe(CableHandle*, int* result)
+    int ticables_cable_reset(CableHandle* cable_handle)
+    int ticables_cable_probe(CableHandle* cable_handle, int* result)
 
-    int ticables_cable_send(CableHandle* handle, uint8_t* data, uint32_t length)
-    int ticables_cable_recv(CableHandle* handle, uint8_t* data, uint32_t length)
+    int ticables_cable_send(CableHandle* cable_handle, uint8_t* data, uint32_t length)
+    int ticables_cable_recv(CableHandle* cable_handle, uint8_t* data, uint32_t length)
 
-    int ticables_cable_check(CableHandle* handle, CableStatus* status)
+    int ticables_cable_check(CableHandle* cable_handle, CableStatus* status)
 
-    int ticables_progress_reset(CableHandle* handle)
-    int ticables_progress_get(CableHandle* handle, int* count, int* msec, int* rate)
+    int ticables_progress_reset(CableHandle* cable_handle)
+    int ticables_progress_get(CableHandle* cable_handle, int* count, int* msec, int* rate)
 
     int ticables_probing_do(int*** result, int timeout, ProbingMethod method)
     int ticables_probing_finish(int*** result)
