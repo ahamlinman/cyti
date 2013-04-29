@@ -21,6 +21,7 @@ cimport ticables
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
+from libc.string cimport memset
 
 ticables.ticables_library_init()
 
@@ -75,6 +76,10 @@ cdef class Connection:
             raise IOError("Cable is not open")
 
         buf = <uint8_t *>malloc(length)
+        if buf is NULL:
+            raise MemoryError("Unable to allocate receive buffer")
+
+        memset(buf, 0, length)
         ticables.ticables_cable_recv(self.handle, buf, length)
         arr = <uint8_t[:length]>buf
         free(buf)
