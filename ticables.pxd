@@ -17,6 +17,8 @@
 
 # libticables C API declaration
 
+from libc.stdint cimport uint8_t, uint32_t
+
 cdef extern from "ticables.h":
     ctypedef enum CableModel:
         CABLE_NUL = 0, CABLE_GRY, CABLE_BLK, CABLE_PAR,
@@ -62,7 +64,7 @@ cdef extern from "ticables.h":
     char* ticables_version_get()
 
     CableHandle* ticables_handle_new(CableModel model, CablePort port)
-    int ticables_handle_del()
+    int ticables_handle_del(CableHandle* handle)
 
     int ticables_options_set_timeout(CableHandle* handle, int timeout)
     int ticables_options_set_delay(CableHandle* handle, int delay)
@@ -76,8 +78,8 @@ cdef extern from "ticables.h":
     int ticables_cable_reset(CableHandle* handle)
     int ticables_cable_probe(CableHandle*, int* result)
 
-    #int ticables_cable_send(CableHandle* handle, uint8_t* data, uint32_t length)
-    #int ticables_cable_recv(CableHandle* handle, uint8_t* data, uint32_t length)
+    int ticables_cable_send(CableHandle* handle, uint8_t* data, uint32_t length)
+    int ticables_cable_recv(CableHandle* handle, uint8_t* data, uint32_t length)
 
     int ticables_cable_check(CableHandle* handle, CableStatus* status)
 
