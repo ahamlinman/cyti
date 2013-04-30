@@ -121,3 +121,8 @@ def find_connections():
     ticables.ticables_probing_finish(&array)
 
     return found_connections
+
+def library_versions():
+    return { "ticables": ticables.ticables_version_get().decode("utf-8"),
+             "ticalcs": ticalcs.ticalcs_version_get().decode("utf-8"),
+             "tifiles": tifiles.tifiles_version_get().decode("utf-8") }
