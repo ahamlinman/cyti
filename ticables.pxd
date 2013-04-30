@@ -28,19 +28,6 @@ cdef extern from "ticables.h":
     ctypedef enum CablePort:
         PORT_0 = 0, PORT_1, PORT_2, PORT_3, PORT_4
 
-    ctypedef enum UsbPid:
-        PID_UNKNOWN  = 0,
-        PID_TIGLUSB  = 0xE001,
-        PID_TI89TM   = 0xE004,
-        PID_TI84P    = 0xE003,
-        PID_TI84P_SE = 0xE008,
-        PID_NSPIRE   = 0xE012
-
-    ctypedef enum CableStatus:
-        STATUS_NONE = 0,
-        STATUS_RX = 1,
-        STATUS_TX = 2
-
     ctypedef enum ProbingMethod:
         PROBE_NONE = 0,
         PROBE_FIRST = 1,
@@ -51,19 +38,12 @@ cdef extern from "ticables.h":
     ctypedef struct CableHandle:
         pass
 
-    ctypedef struct CableOptions:
-        CableModel model,
-        CablePort port,
-        int timeout,
-        int delay,
-        int calc
-
     int ticables_library_init()
     int ticables_library_exit()
 
     char* ticables_version_get()
 
-    CableHandle* ticables_handle_new(CableModel model, CablePort port)
+    CableHandle* ticables_handle_new(CableModel cable_model, CablePort cable_port)
     int ticables_handle_del(CableHandle* cable_handle)
 
     int ticables_options_set_timeout(CableHandle* cable_handle, int timeout)
@@ -75,22 +55,11 @@ cdef extern from "ticables.h":
     int ticables_cable_open(CableHandle* cable_handle)
     int ticables_cable_close(CableHandle* cable_handle)
 
-    int ticables_cable_reset(CableHandle* cable_handle)
-    int ticables_cable_probe(CableHandle* cable_handle, int* result)
-
     int ticables_cable_send(CableHandle* cable_handle, uint8_t* data, uint32_t length)
     int ticables_cable_recv(CableHandle* cable_handle, uint8_t* data, uint32_t length)
 
-    int ticables_cable_check(CableHandle* cable_handle, CableStatus* status)
-
-    int ticables_progress_reset(CableHandle* cable_handle)
-    int ticables_progress_get(CableHandle* cable_handle, int* count, int* msec, int* rate)
-
-    int ticables_probing_do(int*** result, int timeout, ProbingMethod method)
+    int ticables_probing_do(int*** result, int timeout, ProbingMethod probing_method)
     int ticables_probing_finish(int*** result)
-    bint ticables_is_usb_enabled()
-    int ticables_get_usb_devices(int** array, int* length)
 
-    const char* ticables_model_to_string(CableModel model)
-    const char* ticables_port_to_string(CablePort port)
-    const char* ticables_usbpid_to_string(UsbPid pid)
+    const char* ticables_model_to_string(CableModel cable_model)
+    const char* ticables_port_to_string(CablePort cable_port)
