@@ -17,44 +17,62 @@
 
 import atexit
 
-cimport ticables
+cimport ticables, ticalcs, tifiles
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
 ticables.ticables_library_init()
+tifiles.tifiles_library_init()
+ticalcs.ticalcs_library_init()
 
 # Cython complains if these aren't lambdas
 atexit.register(lambda: ticables.ticables_library_exit())
+atexit.register(lambda: tifiles.tifiles_library_exit())
+atexit.register(lambda: ticalcs.ticalcs_library_exit())
 
 cdef class Connection:
-    cdef ticables.CableHandle* handle
-    cdef ticables.CableModel cable
-    cdef ticables.CablePort port
+    cdef ticables.CableHandle* cable_handle
+    cdef ticables.CableModel cable_model
+    cdef ticables.CablePort cable_port
+    cdef tifiles.CalcModel calc_model
     cdef bint connected
 
-    def __init__(self, cable, port):
-        self.cable = cable
-        self.port = port
+    def __init__(self, cable_model, cable_port):
+        self.cable_model = cable_model
+        self.cable_port = cable_port
         self.connected = False
 
+        cdef tifiles.CalcModel calc_model
+        probe_result = ticalcs.ticalcs_probe(self.cable_model, self.cable_port, &calc_model, 1)
+        if probe_result == 0:
+            self.calc_model = calc_model
+        else:
+            self.calc_model = tifiles.CALC_NONE
+
     def __str__(self):
-        return "%s connection on port %s" % (
-            ticables.ticables_model_to_string(self.cable).decode("utf-8"),
-            ticables.ticables_port_to_string(self.port).decode("utf-8"))
+        if self.calc_model != tifiles.CALC_NONE:
+            return "%s connection to %s on port %s" % (
+                ticables.ticables_model_to_string(self.cable_model).decode("utf-8"),
+                tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8"),
+                ticables.ticables_port_to_string(self.cable_port).decode("utf-8"))
+        else:
+            return "%s connection on port %s" % (
+                ticables.ticables_model_to_string(self.cable_model).decode("utf-8"),
+                ticables.ticables_port_to_string(self.cable_port).decode("utf-8"))
 
     def __dealloc__(self):
-        if self.handle:
-            ticables.ticables_cable_close(self.handle)
-            ticables.ticables_handle_del(self.handle)
+        if self.cable_handle:
+            ticables.ticables_cable_close(self.cable_handle)
+            ticables.ticables_handle_del(self.cable_handle)
 
     def connect(self):
-        self.handle = ticables.ticables_handle_new(self.cable, self.port)
-        err = ticables.ticables_cable_open(self.handle)
+        self.cable_handle = ticables.ticables_handle_new(self.cable_model, self.cable_port)
+        err = ticables.ticables_cable_open(self.cable_handle)
         if err:
-            ticables.ticables_handle_del(self.handle)
-            self.handle = NULL
+            ticables.ticables_handle_del(self.cable_handle)
+            self.cable_handle = NULL
             raise IOError("Unable to open cable: %i" % err)
         self.connected = True
 
@@ -65,7 +83,7 @@ cdef class Connection:
         if not self.connected:
             raise IOError("Cable is not open")
 
-        if ticables.ticables_cable_send(self.handle, data, length):
+        if ticables.ticables_cable_send(self.cable_handle, data, length):
             raise IOError("Error sending data")
 
     def receive_bytes(self, uint32_t length):
@@ -80,11 +98,10 @@ cdef class Connection:
             raise MemoryError("Unable to allocate receive buffer")
 
         memset(buf, 0, length)
-        ticables.ticables_cable_recv(self.handle, buf, length)
+        ticables.ticables_cable_recv(self.cable_handle, buf, length)
         arr = <uint8_t[:length]>buf
         free(buf)
         return arr
-
 
 def find_connections():
     cdef int** array
