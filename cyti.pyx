@@ -110,8 +110,8 @@ cdef class Calculator:
         cdef uint32_t length
         length = len(data)
 
-        if not self.connected:
-            raise IOError("Cable is not open")
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
 
         if ticables.ticables_cable_send(self.cable_handle, data, length):
             raise IOError("Error sending data")
@@ -120,8 +120,8 @@ cdef class Calculator:
         cdef uint8_t* buf
         cdef uint8_t[:] arr
 
-        if not self.connected:
-            raise IOError("Cable is not open")
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
 
         buf = <uint8_t *>malloc(length)
         if buf is NULL:
