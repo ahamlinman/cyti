@@ -38,4 +38,6 @@ cdef extern from "ticalcs.h":
 
     int ticalcs_calc_isready(CalcHandle* calc_handle)
 
+    int ticalcs_calc_send_key(CalcHandle* calc_handle, uint16_t keycode)
+
     int ticalcs_probe(ticables.CableModel cable_model, ticables.CablePort cable_port, tifiles.CalcModel* calc_model, int all)

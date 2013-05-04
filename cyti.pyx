@@ -147,6 +147,12 @@ cdef class Calculator:
                 # The calculator is disconnected or off
                 return False
 
+    def send_key(self, keycode):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        ticalcs.ticalcs_calc_send_key(self.calc_handle, keycode)
+
 def find_connections():
     cdef int** array
 

@@ -23,15 +23,16 @@ You must have Cython installed for whichever version of Python you use. Visit [C
 Using CyTI
 ----------
 
-Here is an example of sending the "M" key to a connected calculator (WARNING: Does not work with a direct USB connection):
+Here is an example of sending the "M" key to a connected TI-83/84 calculator:
 
     import cyti
     connections = cyti.find_connections()
     connection = connections[0]
     calculator = connection.connect()
     if calculator.is_ready():
-	    calculator.send_bytes(b'\x23\x87\xA6\x00')
-	    response = calculator.receive_bytes(8)
+        calculator.send_key(0xA6)
+
+(Note that this may not work with certain calculators connected directly via USB. This is an issue with libticalcs and/or the calculator itself.)
 
 Introduction to CyTI
 ====================
