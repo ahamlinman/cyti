@@ -36,6 +36,6 @@ cdef extern from "ticalcs.h":
     int ticalcs_cable_attach(CalcHandle* calc_handle, ticables.CableHandle* cable_handle)
     int ticalcs_cable_detach(CalcHandle* calc_handle)
 
-    bint ticalcs_calc_isready(CalcHandle* calc_handle)
+    int ticalcs_calc_isready(CalcHandle* calc_handle)
 
     int ticalcs_probe(ticables.CableModel cable_model, ticables.CablePort cable_port, tifiles.CalcModel* calc_model, int all)

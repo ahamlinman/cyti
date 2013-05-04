@@ -28,9 +28,10 @@ Here is an example of sending the "M" key to a connected calculator (WARNING: Do
     import cyti
     connections = cyti.find_connections()
     connection = connections[0]
-    connection.connect()
-    connection.send_bytes(b'\x23\x87\xA6\x00')
-    response = connection.receive_bytes(8)
+    calculator = connection.connect()
+    if calculator.is_ready():
+	    calculator.send_bytes(b'\x23\x87\xA6\x00')
+	    response = calculator.receive_bytes(8)
 
 Introduction to CyTI
 ====================

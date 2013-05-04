@@ -37,12 +37,10 @@ cdef class Connection:
     cdef ticables.CableModel cable_model
     cdef ticables.CablePort cable_port
     cdef tifiles.CalcModel calc_model
-    cdef bint connected
 
     def __init__(self, cable_model, cable_port):
         self.cable_model = cable_model
         self.cable_port = cable_port
-        self.connected = False
 
         cdef tifiles.CalcModel calc_model
         probe_result = ticalcs.ticalcs_probe(self.cable_model, self.cable_port, &calc_model, 1)
@@ -64,16 +62,48 @@ cdef class Connection:
 
     def __dealloc__(self):
         if self.cable_handle:
-            ticables.ticables_cable_close(self.cable_handle)
             ticables.ticables_handle_del(self.cable_handle)
 
     def connect(self):
         self.cable_handle = ticables.ticables_handle_new(self.cable_model, self.cable_port)
-        err = ticables.ticables_cable_open(self.cable_handle)
-        if err:
+        
+        calc = Calculator(self.calc_model)
+        calc.connect(self.cable_handle)
+        
+        self.cable_handle = NULL
+        
+        return calc
+
+cdef class Calculator:
+    cdef ticables.CableHandle* cable_handle
+    cdef ticalcs.CalcHandle* calc_handle
+    cdef tifiles.CalcModel calc_model
+    cdef bint connected
+    
+    def __init__(self, calc_model):
+        self.calc_model = calc_model
+        self.connected = False
+        self.calc_handle = ticalcs.ticalcs_handle_new(self.calc_model)
+    
+    def __str__(self):
+        return "%s Calculator" % tifiles.tifiles_model_to_string(self.calc_model)
+    
+    def __dealloc__(self):
+        if self.connected:
+            ticalcs.ticalcs_cable_detach(self.calc_handle)
+        if self.calc_handle:
+            ticalcs.ticalcs_handle_del(self.calc_handle)
+        if self.cable_handle:
             ticables.ticables_handle_del(self.cable_handle)
+    
+    cdef connect(self, ticables.CableHandle* cable_handle):
+        self.cable_handle = cable_handle
+        
+        err = ticalcs.ticalcs_cable_attach(self.calc_handle, self.cable_handle)
+        if err:
             self.cable_handle = NULL
-            raise IOError("Unable to open cable: %i" % err)
+            raise IOError("Unable to connect to calculator: %i" % err)
+        
         self.connected = True
 
     def send_bytes(self, uint8_t* data):
@@ -102,6 +132,20 @@ cdef class Connection:
         arr = <uint8_t[:length]>buf
         free(buf)
         return arr
+    
+    def is_ready(self, retries = 0):
+        if ticalcs.ticalcs_calc_isready(self.calc_handle) == 0:
+            # The calculator is fine
+            return True
+        else:
+            if retries < 1:
+                # The calculator wasn't ready - reconnect and try again
+                ticalcs.ticalcs_cable_detach(self.calc_handle)
+                ticalcs.ticalcs_cable_attach(self.calc_handle, self.cable_handle)
+                return self.is_ready(retries + 1)
+            else:
+                # The calculator is disconnected or off
+                return False
 
 def find_connections():
     cdef int** array
