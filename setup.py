@@ -8,8 +8,8 @@ import subprocess
 module_name = "cyti"
 module_version = "0.1"
 module_files = ["cyti.pyx"]
-module_include_dirs = ["/usr/include/tilp2", "/usr/local/include/tilp2"]
-module_libraries = ["ticables2", "ticalcs2", "tifiles2", "ticonv"]
+module_include_dirs = []
+module_libraries = []
 module_library_dirs = []
 
 ### Get extra package configuration options ###
@@ -24,7 +24,7 @@ def pkgconfig(*packages, **kw):
     return kw
 ## end of http://code.activestate.com/recipes/502261/ }}}
 
-pkg_config_opts = pkgconfig('glib-2.0')
+pkg_config_opts = pkgconfig('ticables2', 'ticalcs2', 'tifiles2')
 
 if 'include_dirs' in pkg_config_opts:
     module_include_dirs += pkg_config_opts['include_dirs']
