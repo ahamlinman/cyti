@@ -116,7 +116,7 @@ cdef class Calculator:
         if ticables.ticables_cable_send(self.cable_handle, data, length):
             raise IOError("Error sending data")
 
-    def receive_bytes(self, uint32_t length):
+    def get_bytes(self, uint32_t length):
         cdef uint8_t* buf
         cdef uint8_t[:] arr
 
