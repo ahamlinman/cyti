@@ -153,6 +153,14 @@ cdef class Calculator:
 
         ticalcs.ticalcs_calc_send_key(self.calc_handle, keycode)
 
+    def get_id(self):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        cdef uint8_t buf[32]
+        ticalcs.ticalcs_calc_recv_idlist(self.calc_handle, buf)
+        return buf
+
 def find_connections():
     cdef int** array
 
