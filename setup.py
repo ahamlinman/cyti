@@ -1,13 +1,13 @@
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 import subprocess
 
 ### Initial settings ###
 
 module_name = "cyti"
 module_version = "0.1"
-module_files = ["cyti.pyx"]
+module_files = ["*.pyx"]
 module_include_dirs = []
 module_libraries = []
 module_library_dirs = []
@@ -39,9 +39,9 @@ if 'library_dirs' in pkg_config_opts:
 
 setup(name=module_name,
       version=module_version,
-      cmdclass={'build_ext': build_ext},
-      ext_modules=[Extension(module_name, module_files,
+      ext_modules=cythonize([Extension(module_name, module_files,
                              include_dirs=module_include_dirs,
                              libraries=module_libraries,
                              library_dirs=module_library_dirs)])
+)
 
