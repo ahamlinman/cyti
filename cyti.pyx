@@ -208,6 +208,13 @@ def find_connections():
 
     return found_connections
 
+def connect():
+    connections = find_connections()
+    if connections is not None:
+        return connections[0].connect()
+    else:
+        return None
+
 def library_versions():
     return { "ticables": ticables.ticables_version_get().decode("utf-8"),
              "ticalcs": ticalcs.ticalcs_version_get().decode("utf-8"),
