@@ -22,16 +22,19 @@ You must have Cython installed for whichever version of Python you use. Visit [C
 Using CyTI
 ----------
 
-Here is an example of sending the "M" key to a connected TI-83/84 calculator:
+With your calculator on the home screen, try running this code to make it do a simple math problem (I've occasionally had some issues when using USB, so your mileage may vary):
 
     import cyti
     connections = cyti.find_connections()
-    connection = connections[0]
-    calculator = connection.connect()
-    if calculator.is_ready():
-        calculator.send_key(0xA6)
+    calculator = connections[0].connect()
+    for key in [0x90, 0x80, 0x90, 0x05]:
+        calculator.send_key(key)
 
-(Note that this may not work with certain calculators connected directly via USB. This is an issue with libticalcs and/or the calculator itself.)
+There are some other functions you can try as well:
+
+    calculator.is_ready()        # Returns True or False
+    calculator.get_id()          # Returns the unique ID reported by the calculator
+    calculator.get_file_names()  # Gets a list of everything in the calculator's memory
 
 Introduction to CyTI
 ====================
