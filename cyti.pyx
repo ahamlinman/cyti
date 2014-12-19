@@ -106,33 +106,6 @@ cdef class Calculator:
 
         self.connected = True
 
-    def send_bytes(self, uint8_t* data):
-        cdef uint32_t length
-        length = len(data)
-
-        if not self.is_ready():
-            raise Exception("The calculator is not ready")
-
-        if ticables.ticables_cable_send(self.cable_handle, data, length):
-            raise IOError("Error sending data")
-
-    def get_bytes(self, uint32_t length):
-        cdef uint8_t* buf
-        cdef uint8_t[:] arr
-
-        if not self.is_ready():
-            raise Exception("The calculator is not ready")
-
-        buf = <uint8_t *>malloc(length)
-        if buf is NULL:
-            raise MemoryError("Unable to allocate receive buffer")
-
-        memset(buf, 0, length)
-        ticables.ticables_cable_recv(self.cable_handle, buf, length)
-        arr = <uint8_t[:length]>buf
-        free(buf)
-        return arr
-
     def is_ready(self, retries = 0):
         if ticalcs.ticalcs_calc_isready(self.calc_handle) == 0:
             # The calculator is fine
