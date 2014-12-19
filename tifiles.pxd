@@ -26,6 +26,17 @@ cdef extern from "tifiles.h":
         CALC_TI92, CALC_TI92P, CALC_V200, CALC_TI84P_USB, CALC_TI89T_USB,
         CALC_NSPIRE, CALC_TI80, CALC_MAX
 
+    ctypedef struct VarEntry:
+        char folder[1024], # FLDNAME_MAX
+        char name[1024], # VARNAME_MAX
+
+        uint8_t type,
+        uint8_t attr,
+        uint32_t size,
+        uint8_t* data,
+
+        int action
+
     int tifiles_library_init()
     int tifiles_library_exit()
 

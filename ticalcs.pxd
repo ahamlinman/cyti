@@ -19,7 +19,7 @@
 
 from libc.stdint cimport uint8_t, uint16_t
 
-cimport ticables, tifiles
+cimport ticables, tifiles, glib
 
 cdef extern from "ticalcs.h":
     ctypedef struct CalcHandle:
@@ -41,5 +41,8 @@ cdef extern from "ticalcs.h":
     int ticalcs_calc_send_key(CalcHandle* calc_handle, uint16_t keycode)
 
     int ticalcs_calc_recv_idlist(CalcHandle* calc_handle, uint8_t* buf)
+
+    int ticalcs_calc_get_dirlist(CalcHandle* calc_handle, glib.GNode** var_tree, glib.GNode** app_tree)
+    void ticalcs_dirlist_destroy(glib.GNode** tree)
 
     int ticalcs_probe(ticables.CableModel cable_model, ticables.CablePort cable_port, tifiles.CalcModel* calc_model, int all)

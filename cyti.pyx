@@ -17,7 +17,7 @@
 
 import atexit
 
-cimport ticables, ticalcs, tifiles
+cimport ticables, ticalcs, tifiles, ticonv, glib
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
@@ -161,6 +161,34 @@ cdef class Calculator:
         ticalcs.ticalcs_calc_recv_idlist(self.calc_handle, buf)
         return buf
 
+    def get_file_names(self):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        cdef glib.GNode* var_tree
+        cdef glib.GNode* app_tree
+
+        ticalcs.ticalcs_calc_get_dirlist(self.calc_handle, &var_tree, &app_tree)
+
+        names = self.__get_name_array_from_tree(var_tree) + self.__get_name_array_from_tree(app_tree)
+
+        ticalcs.ticalcs_dirlist_destroy(&var_tree)
+        ticalcs.ticalcs_dirlist_destroy(&app_tree)
+
+        return names
+
+    cdef __get_name_array_from_tree(self, glib.GNode* tree):
+        names = []
+        for i in range(0, glib.g_node_n_children(tree)):
+            parent = glib.g_node_nth_child(tree, i)
+            for j in range(0, glib.g_node_n_children(parent)):
+                child = glib.g_node_nth_child(parent, j)
+                entry = <tifiles.VarEntry*>child.data
+                name = ticonv.ticonv_varname_to_utf8(self.calc_model, entry.name, entry.type)
+                names.append(name.decode("utf-8"))
+                glib.g_free(name)
+        return names
+
 def find_connections():
     cdef int** array
 
@@ -183,4 +211,5 @@ def find_connections():
 def library_versions():
     return { "ticables": ticables.ticables_version_get().decode("utf-8"),
              "ticalcs": ticalcs.ticalcs_version_get().decode("utf-8"),
-             "tifiles": tifiles.tifiles_version_get().decode("utf-8") }
+             "tifiles": tifiles.tifiles_version_get().decode("utf-8"),
+             "ticonv": ticonv.ticonv_version_get().decode("utf-8") }
