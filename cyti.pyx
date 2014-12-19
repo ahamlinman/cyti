@@ -86,7 +86,7 @@ cdef class Calculator:
         self.calc_handle = ticalcs.ticalcs_handle_new(self.calc_model)
 
     def __str__(self):
-        return "%s Calculator" % tifiles.tifiles_model_to_string(self.calc_model)
+        return "%s Calculator" % tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8")
 
     def __dealloc__(self):
         if self.connected:
