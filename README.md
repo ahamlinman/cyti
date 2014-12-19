@@ -25,8 +25,7 @@ Using CyTI
 With your calculator on the home screen, try running this code to make it do a simple math problem (I've occasionally had some issues when using USB, so your mileage may vary):
 
     import cyti
-    connections = cyti.find_connections()
-    calculator = connections[0].connect()
+    calculator = cyti.connect()
     for key in [0x90, 0x80, 0x90, 0x05]:
         calculator.send_key(key)
 
