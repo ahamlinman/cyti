@@ -18,3 +18,10 @@
 # Main CyTI library
 
 from cyti.core import *
+
+def connect():
+    connections = find_connections()
+    if connections is not None:
+        return connections[0].connect()
+    else:
+        return None
