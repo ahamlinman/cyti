@@ -17,8 +17,17 @@
 
 # Conversions between Python and TI types
 
-from cyti import Variable
+from cyti.types import Variable
 from cyti.convert import core
+
+def to_python(v):
+    if not isinstance(v, Variable):
+        raise TypeError("Argument is not a CyTI variable")
+
+    if v.type_code == 0:
+        return ti8xreal_to_int(v)
+
+    return v
 
 def ti8xreal_to_int(v):
     if not isinstance(v, Variable):
