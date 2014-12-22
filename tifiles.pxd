@@ -37,6 +37,19 @@ cdef extern from "tifiles.h":
 
         int action
 
+    ctypedef struct FileContent:
+        CalcModel model,
+
+        char default_folder[1024], # FLDNAME_MAX
+        char comment[43],
+
+        int num_entries,
+        VarEntry** entries,
+
+        uint16_t checksum,
+
+        CalcModel model_dst
+
     int tifiles_library_init()
     int tifiles_library_exit()
 

@@ -150,6 +150,36 @@ cdef class Calculator:
 
         return variables
 
+    cpdef _retrieve_variable_array(self, VariableRequest variable):
+        cdef tifiles.FileContent file_content
+
+        ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
+
+        variables = []
+        cdef int i = 0
+        while(file_content.entries[i] != NULL):
+            entry = file_content.entries[i]
+
+            v = Variable()
+            v.var_entry = entry[0]
+            v.var_entry.data = NULL
+            v.calc_model = file_content.model
+            n = ticonv.ticonv_varname_to_utf8(file_content.model, entry.name, entry.type)
+            v.name = n.decode("utf-8")
+            glib.g_free(n)
+            v.type_code = entry.type
+            v.size = entry.size
+            v.data = (<uint8_t[:entry.size]>entry.data).copy()
+
+            variables.append(v)
+            i += 1
+
+            glib.g_free(entry.data)
+            glib.g_free(entry)
+
+        glib.g_free(file_content.entries)
+        return variables
+
     cdef __get_variable_array_from_tree(self, glib.GNode* tree):
         variables = []
         for i in range(0, glib.g_node_n_children(tree)):
@@ -166,6 +196,9 @@ cdef class VariableRequest:
     cdef readonly str name
     cdef readonly int type_code
     cdef readonly int size
+
+cdef class Variable(VariableRequest):
+    cdef readonly uint8_t[:] data
 
 cdef create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
     variable = VariableRequest()

@@ -45,4 +45,6 @@ cdef extern from "ticalcs.h":
     int ticalcs_calc_get_dirlist(CalcHandle* calc_handle, glib.GNode** var_tree, glib.GNode** app_tree)
     void ticalcs_dirlist_destroy(glib.GNode** tree)
 
+    int ticalcs_calc_recv_var(CalcHandle* calc_handle, int calc_mode, tifiles.FileContent* file_content, tifiles.VarEntry* var_entry)
+
     int ticalcs_probe(ticables.CableModel cable_model, ticables.CablePort cable_port, tifiles.CalcModel* calc_model, int all)
