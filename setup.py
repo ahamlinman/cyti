@@ -7,8 +7,7 @@ import subprocess
 
 module_name = "cyti"
 module_version = "0.1"
-module_files = ["cyti/*.pyx"]
-module_include_dirs = []
+module_include_dirs = ["."]
 module_libraries = []
 module_library_dirs = []
 
@@ -37,11 +36,16 @@ if 'library_dirs' in pkg_config_opts:
 
 ### Set up module ###
 
-setup(name=module_name,
-      version=module_version,
-      ext_modules=cythonize([Extension(module_name, module_files,
-                             include_dirs=module_include_dirs,
-                             libraries=module_libraries,
-                             library_dirs=module_library_dirs)])
+setup(
+    name=module_name,
+    version=module_version,
+    ext_modules=cythonize([
+        Extension("cyti.core", ["cyti/core.pyx"],
+                    include_dirs=module_include_dirs,
+                    libraries=module_libraries,
+                    library_dirs=module_library_dirs),
+        Extension("cyti.convert.core", ["cyti/convert/core.pyx"],
+                    include_dirs=["."])
+    ])
 )
 

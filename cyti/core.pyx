@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# CyTI core types/functions
+
 import atexit
 
 from cyti.clibs cimport ticables, ticalcs, tifiles, ticonv, glib
