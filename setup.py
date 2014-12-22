@@ -7,7 +7,7 @@ import subprocess
 
 module_name = "cyti"
 module_version = "0.1"
-module_files = ["*.pyx"]
+module_files = ["cyti/*.pyx"]
 module_include_dirs = []
 module_libraries = []
 module_library_dirs = []

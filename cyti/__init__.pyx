@@ -17,7 +17,7 @@
 
 import atexit
 
-cimport ticables, ticalcs, tifiles, ticonv, glib
+from cyti.clibs cimport ticables, ticalcs, tifiles, ticonv, glib
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
