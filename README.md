@@ -1,7 +1,7 @@
 Development Status
 ==================
 
-CyTI has been on hold for quite a while. However, I am starting to come back to it as of December 2014. At the moment, a directory listing can be retrieved and variables can be received from the calculator. However, only raw data is currently available.
+CyTI has been on hold for quite a while. However, I am starting to come back to it as of December 2014. At the moment, a directory listing can be retrieved and variables can be received from the calculator. Real numbers and lists are automatically converted to the appropriate Python types. For other variable types, only raw data is available for now.
 
 Basic Instructions
 ==================
