@@ -134,7 +134,7 @@ cdef class Calculator:
         ticalcs.ticalcs_calc_recv_idlist(self.calc_handle, buf)
         return buf
 
-    def get_file_names(self):
+    def get_file_list(self):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
@@ -143,24 +143,44 @@ cdef class Calculator:
 
         ticalcs.ticalcs_calc_get_dirlist(self.calc_handle, &var_tree, &app_tree)
 
-        names = self.__get_name_array_from_tree(var_tree) + self.__get_name_array_from_tree(app_tree)
+        variables = self.__get_variable_array_from_tree(var_tree) + self.__get_variable_array_from_tree(app_tree)
 
         ticalcs.ticalcs_dirlist_destroy(&var_tree)
         ticalcs.ticalcs_dirlist_destroy(&app_tree)
 
-        return names
+        return variables
 
-    cdef __get_name_array_from_tree(self, glib.GNode* tree):
-        names = []
+    cdef __get_variable_array_from_tree(self, glib.GNode* tree):
+        variables = []
         for i in range(0, glib.g_node_n_children(tree)):
             parent = glib.g_node_nth_child(tree, i)
             for j in range(0, glib.g_node_n_children(parent)):
                 child = glib.g_node_nth_child(parent, j)
                 entry = <tifiles.VarEntry*>child.data
-                name = ticonv.ticonv_varname_to_utf8(self.calc_model, entry.name, entry.type)
-                names.append(name.decode("utf-8"))
-                glib.g_free(name)
-        return names
+                variables.append(create_variable_request(entry, self.calc_model))
+        return variables
+
+cdef class VariableRequest:
+    cdef tifiles.VarEntry var_entry
+    cdef tifiles.CalcModel calc_model
+    cdef readonly str name
+    cdef readonly int type_code
+    cdef readonly int size
+
+cdef create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
+    variable = VariableRequest()
+
+    variable.var_entry = var_entry[0]
+    variable.calc_model = calc_model
+
+    n = ticonv.ticonv_varname_to_utf8(calc_model, var_entry.name, var_entry.type)
+    variable.name = n.decode("utf-8")
+    glib.g_free(n)
+
+    variable.type_code = var_entry.type
+    variable.size = var_entry.size
+
+    return variable
 
 def find_connections():
     cdef int** array
