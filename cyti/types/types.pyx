@@ -20,6 +20,14 @@
 from cyti.clibs cimport tifiles, ticonv, glib
 from cyti.types.types cimport *
 
+cdef class VariableRequest:
+    def __str__(self):
+        return "<VariableRequest for '%s' (%d)>" % (self.name, self.type_code)
+
+cdef class Variable(VariableRequest):
+    def __str__(self):
+        return "<Variable '%s' (%d)>" % (self.name, self.type_code)
+
 cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
     v = VariableRequest()
 
