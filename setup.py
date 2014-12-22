@@ -45,7 +45,11 @@ setup(
                     libraries=module_libraries,
                     library_dirs=module_library_dirs),
         Extension("cyti.convert.core", ["cyti/convert/core.pyx"],
-                    include_dirs=["."])
+                    include_dirs=["."]),
+        Extension("cyti.types.types", ["cyti/types/types.pyx"],
+                    include_dirs=module_include_dirs,
+                    libraries=module_libraries,
+                    library_dirs=module_library_dirs)
     ])
 )
 

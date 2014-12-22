@@ -21,6 +21,9 @@ import atexit
 
 from cyti.clibs cimport ticables, ticalcs, tifiles, ticonv, glib
 
+from cyti.types cimport types
+from cyti.types.types cimport *
+
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
@@ -145,7 +148,9 @@ cdef class Calculator:
 
         ticalcs.ticalcs_calc_get_dirlist(self.calc_handle, &var_tree, &app_tree)
 
-        variables = self.__get_variable_array_from_tree(var_tree) + self.__get_variable_array_from_tree(app_tree)
+        variables = []
+        variables += types._gnode_tree_to_request_array(var_tree, self.calc_model)
+        variables += types._gnode_tree_to_request_array(app_tree, self.calc_model)
 
         ticalcs.ticalcs_dirlist_destroy(&var_tree)
         ticalcs.ticalcs_dirlist_destroy(&app_tree)
@@ -154,68 +159,8 @@ cdef class Calculator:
 
     cpdef _retrieve_variable_array(self, VariableRequest variable):
         cdef tifiles.FileContent file_content
-
         ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
-
-        variables = []
-        cdef int i = 0
-        while(file_content.entries[i] != NULL):
-            entry = file_content.entries[i]
-
-            v = Variable()
-            v.var_entry = entry[0]
-            v.var_entry.data = NULL
-            v.calc_model = file_content.model
-            n = ticonv.ticonv_varname_to_utf8(file_content.model, entry.name, entry.type)
-            v.name = n.decode("utf-8")
-            glib.g_free(n)
-            v.type_code = entry.type
-            v.size = entry.size
-            v.data = (<uint8_t[:entry.size]>entry.data).copy()
-
-            variables.append(v)
-            i += 1
-
-            glib.g_free(entry.data)
-            glib.g_free(entry)
-
-        glib.g_free(file_content.entries)
-        return variables
-
-    cdef __get_variable_array_from_tree(self, glib.GNode* tree):
-        variables = []
-        for i in range(0, glib.g_node_n_children(tree)):
-            parent = glib.g_node_nth_child(tree, i)
-            for j in range(0, glib.g_node_n_children(parent)):
-                child = glib.g_node_nth_child(parent, j)
-                entry = <tifiles.VarEntry*>child.data
-                variables.append(create_variable_request(entry, self.calc_model))
-        return variables
-
-cdef class VariableRequest:
-    cdef tifiles.VarEntry var_entry
-    cdef tifiles.CalcModel calc_model
-    cdef readonly str name
-    cdef readonly int type_code
-    cdef readonly int size
-
-cdef class Variable(VariableRequest):
-    cdef readonly uint8_t[:] data
-
-cdef create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
-    variable = VariableRequest()
-
-    variable.var_entry = var_entry[0]
-    variable.calc_model = calc_model
-
-    n = ticonv.ticonv_varname_to_utf8(calc_model, var_entry.name, var_entry.type)
-    variable.name = n.decode("utf-8")
-    glib.g_free(n)
-
-    variable.type_code = var_entry.type
-    variable.size = var_entry.size
-
-    return variable
+        return types._file_content_to_variable_array(file_content)
 
 def find_connections():
     cdef int** array
