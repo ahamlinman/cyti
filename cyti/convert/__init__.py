@@ -35,4 +35,7 @@ def ti8xreal_to_int(v):
     if v.type_code != 0:
         raise TypeError("Argument is not a TI Real variable")
 
-    return core._real_frame_to_int(v.data)
+    val = core._real_frame_to_abs_int(v.data)
+    val *= -1 if v.data[0] & 0x80 else 1
+
+    return val

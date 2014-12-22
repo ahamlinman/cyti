@@ -19,7 +19,7 @@
 
 from libc.stdint cimport uint8_t
 
-cpdef _real_frame_to_int(uint8_t[:] frame):
+cpdef _real_frame_to_abs_int(uint8_t[:] frame):
     num = 0
 
     for i in range(2, 9):

@@ -28,6 +28,8 @@ from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
 
+from cyti import convert
+
 ticables.ticables_library_init()
 tifiles.tifiles_library_init()
 ticalcs.ticalcs_library_init()
@@ -157,10 +159,32 @@ cdef class Calculator:
 
         return variables
 
+    def get(self, item):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        request = None
+        if isinstance(item, VariableRequest):
+            request = item
+        else:
+            raise TypeError("Could not understand what to retrieve")
+
+        variables = self._retrieve_variable_array(request)
+        if variables is not None:
+            if len(variables) == 1:
+                return convert.to_python(variables[0])
+            else:
+                return variables
+        else:
+            return None
+
     cpdef _retrieve_variable_array(self, VariableRequest variable):
         cdef tifiles.FileContent file_content
-        ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
-        return types._file_content_to_variable_array(file_content)
+        result = ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
+        if result == 0:
+            return types._file_content_to_variable_array(file_content)
+        else:
+            return None
 
 def find_connections():
     cdef int** array
