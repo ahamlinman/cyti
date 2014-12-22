@@ -1,7 +1,7 @@
 Development Status
 ==================
 
-CyTI has been on hold for quite a while. However, I am starting to come back to it as of December 2014. The current priority for the project is being able to receive a usable file list from the calculator. This will lead into the ability to receive files.
+CyTI has been on hold for quite a while. However, I am starting to come back to it as of December 2014. At the moment, a directory listing can be retrieved and variables can be received from the calculator. However, only raw data is currently available.
 
 Basic Instructions
 ==================
