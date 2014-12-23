@@ -19,14 +19,36 @@
 
 from cyti.clibs cimport tifiles, ticonv, glib
 from cyti.types.types cimport *
+# Variable type codes
+ti8x_type_codes = {
+    0x00: "real",
+    0x01: "list",
+    0x02: "matrix",
+    0x03: "y_var",
+    0x04: "string",
+    0x05: "program",
+    0x06: "locked_program",
+    0x07: "picture",
+    0x08: "gdb",
+    0x0C: "complex",
+    0x0D: "complex_list"
+}
+
+# Create reverse mappings for variable type codes
+for d in [ti8x_type_codes]:
+    d.update({v: k for (k, v) in d.items()})
 
 cdef class VariableRequest:
     def __str__(self):
-        return "<VariableRequest for '%s' (%d)>" % (self.name, self.type_code)
+        calc_str = tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8")
+        type_str = ti8x_type_codes[self.type_code]
+        return "<Request for %s %s variable '%s'>" % (calc_str, type_str, self.name)
 
 cdef class Variable(VariableRequest):
     def __str__(self):
-        return "<Variable '%s' (%d)>" % (self.name, self.type_code)
+        calc_str = tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8")
+        type_str = ti8x_type_codes[self.type_code]
+        return "<%s %s variable '%s'>" % (calc_str, type_str, self.name)
 
 cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
     v = VariableRequest()
