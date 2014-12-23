@@ -84,7 +84,7 @@ cdef class Connection:
 cdef class Calculator:
     cdef ticables.CableHandle* cable_handle
     cdef ticalcs.CalcHandle* calc_handle
-    cdef tifiles.CalcModel calc_model
+    cdef readonly tifiles.CalcModel calc_model
     cdef bint connected
 
     def __init__(self, calc_model):

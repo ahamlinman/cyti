@@ -20,6 +20,10 @@
 from cyti.types import Variable
 from cyti.convert import core
 
+from cyti import types
+
+import cyti
+
 def to_python(v):
     if not isinstance(v, Variable):
         raise TypeError("Argument is not a CyTI variable")
@@ -41,6 +45,16 @@ def ti8xreal_to_int(v):
     val *= -1 if v.data[0] & 0x80 else 1
 
     return val
+
+def int_to_ti8xreal(i, name, calc):
+    if not isinstance(i, int) and not isinstance(i, float):
+        raise TypeError("Argument cannot be converted to a TI Real variable")
+    if not isinstance(calc, cyti.Calculator):
+        raise TypeError("Argument is not a CyTI calculator object")
+
+    v = types._create_ti8x_real_var(calc.calc_model, name)
+    v.data[:] = core._int_to_real_frame(i)
+    return v
 
 def ti8xreallist_to_list(v):
     if not isinstance(v, Variable):

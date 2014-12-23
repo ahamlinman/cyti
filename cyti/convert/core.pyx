@@ -18,6 +18,7 @@
 # Conversions between Python and TI types: Cython core
 
 from libc.stdint cimport uint8_t
+import math
 
 cpdef _real_frame_to_abs_int(uint8_t[:] frame):
     num = 0
@@ -31,3 +32,24 @@ cpdef _real_frame_to_abs_int(uint8_t[:] frame):
     num *= pow(10, -13 + exp)
 
     return num
+
+cpdef _int_to_real_frame(num):
+    cdef uint8_t arr[9]
+
+    order = math.floor(math.log(abs(num), 10))
+    if(abs(order) > 99):
+        raise OverflowError("Argument outside of TI real number range")
+
+    norm = int(math.floor(abs(num) * pow(10, 13 - order)))
+
+    for i in range(0, 7):
+        n = norm % 100
+        v = n % 10
+        v += int(n / 10) << 4
+        arr[8 - i] = v
+        norm /= 100
+
+    arr[1] = order + 0x80
+    arr[0] = 0x80 if num < 0 else 0x0
+
+    return (<uint8_t[:]>arr).copy()
