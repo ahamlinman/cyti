@@ -1,3 +1,5 @@
+# coding=utf-8
+#
 # CyTI - A Cython module for linking with TI calculators.
 #
 # Copyright (C) 2013 Alex Hamlin

@@ -23,8 +23,8 @@ from libc.stdint cimport uint8_t
 cdef class VariableRequest:
     cdef tifiles.VarEntry var_entry
     cdef tifiles.CalcModel calc_model
-    cdef readonly str name
-    cdef readonly str folder
+    cdef readonly unicode name
+    cdef readonly unicode folder
     cdef readonly int type_code
     cdef readonly int size
     cdef readonly int attr
