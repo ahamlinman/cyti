@@ -117,24 +117,34 @@ cdef _gnode_tree_to_request_array(glib.GNode* tree, tifiles.CalcModel calc_model
 cdef _file_content_to_variable_array(tifiles.FileContent file_content):
     variables = []
     cdef int i = 0
+    cdef uint8_t[:] arr
+    cdef uint8_t[:] tmp
     while(file_content.entries[i] != NULL):
         entry = file_content.entries[i]
 
         v = Variable()
         v.var_entry = entry[0]
-        v.var_entry.data = NULL
         v.calc_model = file_content.model
+
         n = ticonv.ticonv_varname_to_utf8(file_content.model, entry.name, entry.type)
         v.name = n.decode("utf-8")
         glib.g_free(n)
+
         v.type_code = entry.type
         v.size = entry.size
-        v.data = (<uint8_t[:entry.size]>entry.data).copy()
+        v.attr = entry.attr
+        v.action = entry.action
+
+        arr = view.array(shape=(v.size,), itemsize=sizeof(uint8_t), format="B", allocate_buffer=True)
+        tmp = <uint8_t[:entry.size]>entry.data
+        arr[:entry.size] = tmp
+        v.data = arr
+        glib.g_free(entry.data)
+        v.var_entry.data = &arr[0]
 
         variables.append(v)
         i += 1
 
-        glib.g_free(entry.data)
         glib.g_free(entry)
 
     glib.g_free(file_content.entries)
