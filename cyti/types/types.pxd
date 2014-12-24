@@ -24,11 +24,14 @@ cdef class VariableRequest:
     cdef tifiles.VarEntry var_entry
     cdef tifiles.CalcModel calc_model
     cdef readonly str name
+    cdef readonly str folder
     cdef readonly int type_code
     cdef readonly int size
+    cdef readonly int attr
+    cdef readonly int action
 
 cdef class Variable(VariableRequest):
-    cdef readonly uint8_t[:] data
+    cdef public uint8_t[:] data
 
 cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model)
 cdef _gnode_tree_to_request_array(glib.GNode* tree, tifiles.CalcModel calc_model)

@@ -23,3 +23,5 @@ cdef extern from "ticonv.h":
     const char* ticonv_version_get()
 
     char* ticonv_varname_to_utf8(CalcModel calc_model, const char* src, unsigned char type)
+    char* ticonv_charset_utf16_to_ti(CalcModel calc_model, const char* src)
+    char* ticonv_varname_tokenize(CalcModel calc_model, const char *src, unsigned char type)
