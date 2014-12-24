@@ -18,3 +18,25 @@
 # CyTI types
 
 from cyti.types.types import *
+from cyti.types import types
+
+# Correct list names for L1-L6 on TI-8x
+_num_list_conversion_table = {
+    "1": "L₁",
+    "2": "L₂",
+    "3": "L₃",
+    "4": "L₄",
+    "5": "L₅",
+    "6": "L₆",
+ }
+
+def _create_ti8x_real_var(calc_model, name):
+    return types._create_variable(calc_model, name, 0x00, 9)
+
+def _create_ti8x_real_list_var(calc_model, name, num_elements):
+    size = num_elements * 9 + 2
+
+    if name in _num_list_conversion_table:
+        name = _num_list_conversion_table[name]
+
+    return types._create_variable(calc_model, name, 0x01, size)
