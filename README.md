@@ -11,18 +11,18 @@ Building CyTI
 
 On Linux, build CyTI using distutils and setup.py:
 
-    python setup.py build_ext -i
-
-or
-
     python3 setup.py build_ext -i
 
-You must have Cython installed for whichever version of Python you use. Visit [Cython][] for more information.
+Python 3 is highly recommended, though Python 2 should work (simply build with python instead of python3). You must have Cython installed for whichever version of Python you use. Visit [Cython][] for more information. You must also have the TiLP framework libraries (with development headers) and pkg-config. On Ubuntu, you should be able to install everything you need with:
+
+    sudo apt-get install tilp cython3 libticables-dev libticalcs-dev libtifiles-dev libticonv-dev
+
+Note that this will build CyTI in-place without installing it. This means that you must be in the CyTI directory to import it. This should be fine for testing, as I probably wouldn't recommend the use of CyTI in serious programs for the time being.
 
 Using CyTI
 ----------
 
-With your calculator on the home screen, try running this code to make it do a simple math problem (I've occasionally had some issues when using USB, so your mileage may vary):
+With your calculator on the home screen, try running this code to make it do a simple math problem (I've occasionally had some issues, so your mileage may vary):
 
     import cyti
     calculator = cyti.connect()
@@ -41,7 +41,7 @@ Introduction to CyTI
 What is CyTI?
 -------------
 
-CyTI (pronounced "city") is an in-development Cython module for linking with Texas Instruments (TI) graphing calculators. It presents an object-oriented interface to the [TiLP Framework][], including the ticables, ticalcs, tifiles, and ticonv libraries.
+CyTI (pronounced "city") is an in-development Cython module for linking with Texas Instruments (TI) graphing calculators. It presents a high-level interface to the [TiLP Framework][], including the ticables, ticalcs, tifiles, and ticonv libraries.
 
 What might I use it for?
 ------------------------
