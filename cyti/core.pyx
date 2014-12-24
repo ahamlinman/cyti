@@ -178,6 +178,19 @@ cdef class Calculator:
         else:
             return None
 
+    def send(self, item):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        var = None
+        if(isinstance(item, Variable)):
+            var = item
+        else:
+            raise TypeError("Could not understand what to send")
+
+        result = self._send_variable(item)
+        return result == 0
+
     cpdef _retrieve_variable_array(self, VariableRequest variable):
         cdef tifiles.FileContent file_content
         result = ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
@@ -185,6 +198,22 @@ cdef class Calculator:
             return types._file_content_to_variable_array(file_content)
         else:
             return None
+
+    cpdef _send_variable(self, Variable variable):
+        cdef tifiles.FileContent file_content
+        cdef tifiles.VarEntry* entry_arr[2]
+
+        file_content.model = file_content.model_dst = self.calc_model
+
+        file_content.num_entries = 1
+        entry_arr[0] = &variable.var_entry
+        entry_arr[1] = NULL
+        file_content.entries = &entry_arr[0]
+
+        file_content.checksum = 0
+
+        result = ticalcs.ticalcs_calc_send_var(self.calc_handle, 0, &file_content)
+        return result
 
 def find_connections():
     cdef int** array
