@@ -44,13 +44,19 @@ for d in [ti8x_type_codes]:
 cdef class VariableRequest:
     def __str__(self):
         calc_str = tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8")
-        type_str = ti8x_type_codes[self.type_code]
+        if self.type_code in ti8x_type_codes:
+            type_str = ti8x_type_codes[self.type_code]
+        else:
+            type_str = "type %d" % self.type_code
         return "<Request for %s %s variable '%s'>" % (calc_str, type_str, self.name)
 
 cdef class Variable(VariableRequest):
     def __str__(self):
         calc_str = tifiles.tifiles_model_to_string(self.calc_model).decode("utf-8")
-        type_str = ti8x_type_codes[self.type_code]
+        if self.type_code in ti8x_type_codes:
+            type_str = ti8x_type_codes[self.type_code]
+        else:
+            type_str = "type %d" % self.type_code
         return "<%s %s variable '%s'>" % (calc_str, type_str, self.name)
 
 cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
