@@ -18,8 +18,8 @@
 # Conversions between Python and TI types
 
 from cyti.types import Variable
-from cyti.convert import core
 
+from cyti.convert import core
 from cyti import types
 
 import cyti

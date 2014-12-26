@@ -21,14 +21,14 @@ import atexit
 
 from cyti.clibs cimport ticables, ticalcs, tifiles, ticonv, glib
 
-from cyti.types cimport types
-from cyti.types.types cimport *
+from cyti.types.core cimport *
+cimport cyti.types.core
+
+from cyti import convert
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset
-
-from cyti import convert
 
 ticables.ticables_library_init()
 tifiles.tifiles_library_init()
@@ -151,8 +151,8 @@ cdef class Calculator:
         ticalcs.ticalcs_calc_get_dirlist(self.calc_handle, &var_tree, &app_tree)
 
         variables = []
-        variables += types._gnode_tree_to_request_array(var_tree, self.calc_model)
-        variables += types._gnode_tree_to_request_array(app_tree, self.calc_model)
+        variables += cyti.types.core._gnode_tree_to_request_array(var_tree, self.calc_model)
+        variables += cyti.types.core._gnode_tree_to_request_array(app_tree, self.calc_model)
 
         ticalcs.ticalcs_dirlist_destroy(&var_tree)
         ticalcs.ticalcs_dirlist_destroy(&app_tree)
@@ -195,7 +195,7 @@ cdef class Calculator:
         cdef tifiles.FileContent file_content
         result = ticalcs.ticalcs_calc_recv_var(self.calc_handle, 0, &file_content, &variable.var_entry)
         if result == 0:
-            return types._file_content_to_variable_array(file_content)
+            return cyti.types.core._file_content_to_variable_array(file_content)
         else:
             return None
 
