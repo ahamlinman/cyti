@@ -36,6 +36,12 @@ cpdef _real_frame_to_abs_int(uint8_t[:] frame):
 cpdef _int_to_real_frame(num):
     cdef uint8_t arr[9]
 
+    if num == 0:
+        frame = <uint8_t[:]>arr
+        frame[:] = 0
+        frame[1] = 0x80
+        return frame.copy()
+
     order = math.floor(math.log(abs(num), 10))
     if(abs(order) > 99):
         raise OverflowError("Argument outside of TI real number range")
