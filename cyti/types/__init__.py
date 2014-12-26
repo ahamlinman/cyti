@@ -47,6 +47,9 @@ def _create_request(calc, name, type_arg):
     return core._create_variable_request(calc.calc_model, name, type_arg)
 
 def _create_ti8x_real_var(calc_model, name):
+    if name == "theta":
+        name = "θ"
+
     return core._create_variable(calc_model, name, 0x00, 9)
 
 def _create_ti8x_real_list_var(calc_model, name, num_elements):

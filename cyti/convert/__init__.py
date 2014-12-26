@@ -22,6 +22,8 @@ from cyti.types import Variable
 from cyti.convert import core
 from cyti import types
 
+from array import array
+
 import cyti
 
 def to_python(v):
@@ -34,6 +36,14 @@ def to_python(v):
         return ti8xreallist_to_list(v)
 
     return v
+
+def to_cyti(v, name, calc):
+    if isinstance(v, int) or isinstance(v, float):
+        return int_to_ti8xreal(v, name, calc)
+    elif isinstance(v, list):
+        return list_to_ti8xreallist(v, name, calc)
+    else:
+        raise TypeError("Unable to convert the given argument")
 
 def ti8xreal_to_int(v):
     if not isinstance(v, Variable):
@@ -49,10 +59,11 @@ def ti8xreal_to_int(v):
 def int_to_ti8xreal(i, name, calc):
     if not isinstance(i, int) and not isinstance(i, float):
         raise TypeError("Argument cannot be converted to a TI Real variable")
-    if not isinstance(calc, cyti.Calculator):
-        raise TypeError("Argument is not a CyTI calculator object")
 
-    v = types._create_ti8x_real_var(calc.calc_model, name)
+    if isinstance(calc, cyti.Calculator):
+        calc = calc.calc_model
+
+    v = types._create_ti8x_real_var(calc, name)
     v.data[:] = core._int_to_real_frame(i)
     return v
 
@@ -73,3 +84,19 @@ def ti8xreallist_to_list(v):
         vals.append(val)
 
     return vals
+
+def list_to_ti8xreallist(l, name, calc):
+    if not isinstance(l, list):
+        raise TypeError("Argument cannot be converted to a TI Real List variable")
+
+    if isinstance(calc, cyti.Calculator):
+        calc = calc.calc_model
+
+    v = types._create_ti8x_real_list_var(calc, name, len(l))
+    v.data[0:2] = array("B", [len(l) % 256, len(l) // 256])
+
+    for i in range(0, len(l)):
+        idx = i * 9 + 2
+        v.data[idx:idx+9] = core._int_to_real_frame(l[i])
+
+    return v
