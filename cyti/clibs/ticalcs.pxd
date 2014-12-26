@@ -47,5 +47,6 @@ cdef extern from "ticalcs.h":
 
     int ticalcs_calc_recv_var(CalcHandle* calc_handle, int calc_mode, tifiles.FileContent* file_content, tifiles.VarEntry* var_entry)
     int ticalcs_calc_send_var(CalcHandle* calc_handle, int calc_mode, tifiles.FileContent* file_content)
+    int ticalcs_calc_del_var(CalcHandle* calc_handle, tifiles.VarEntry* var_entry)
 
     int ticalcs_probe(ticables.CableModel cable_model, ticables.CablePort cable_port, tifiles.CalcModel* calc_model, int all)

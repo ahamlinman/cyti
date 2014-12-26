@@ -159,18 +159,21 @@ cdef class Calculator:
 
         return variables
 
+    def __args_to_var_request(self, item, *args):
+        if isinstance(item, VariableRequest):
+            return item
+        elif isinstance(item, tuple):
+            return types._create_request(self, item[1], item[0])
+        elif isinstance(item, str) and len(args) == 1:
+            return self.__args_to_var_request((item, args[0]))
+        else:
+            raise TypeError("Could not understand what to retrieve")
+
     def get(self, item, *args):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
-        if isinstance(item, VariableRequest):
-            request = item
-        elif isinstance(item, tuple):
-            request = types._create_request(self, item[1], item[0])
-        elif isinstance(item, str) and len(args) == 1:
-            return self.get((item, args[0]))
-        else:
-            raise TypeError("Could not understand what to retrieve")
+        request = self.__args_to_var_request(item, *args)
 
         variables = self._retrieve_variable_array(request)
         if variables is not None:
@@ -183,6 +186,20 @@ cdef class Calculator:
 
     def __getitem__(self, item):
         return self.get(item)
+
+    def delete(self, item, *args):
+        if not self.is_ready():
+            raise Exception("The calculator is not ready")
+
+        request = self.__args_to_var_request(item, *args)
+
+        result = self._delete_variable(request)
+        return result == 0
+
+    def __delitem__(self, item):
+        result = self.delete(item)
+        if not result:
+            raise IOError("An unspecified communication error occurred")
 
     def send(self, item, *args):
         if not self.is_ready():
@@ -235,6 +252,9 @@ cdef class Calculator:
 
         result = ticalcs.ticalcs_calc_send_var(self.calc_handle, 0, &file_content)
         return result
+
+    cpdef _delete_variable(self, VariableRequest variable):
+        return ticalcs.ticalcs_calc_del_var(self.calc_handle, &variable.var_entry)
 
 def find_connections():
     cdef int** array
