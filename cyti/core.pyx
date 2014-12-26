@@ -184,18 +184,33 @@ cdef class Calculator:
     def __getitem__(self, item):
         return self.get(item)
 
-    def send(self, item):
+    def send(self, item, *args):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
         var = None
         if(isinstance(item, Variable)):
             var = item
+        elif(isinstance(item, tuple) and len(item) == 2 and len(args) == 1):
+            var = convert.to_cyti(args[0], item[1], self)
+            if(types.ti8x_type_codes[var.type_code] != item[0]):
+                raise TypeError("Cannot assign %s to %s variable" % (str(type(args[0])), item[0]))
+        elif(isinstance(item, str) and len(args) == 2):
+            return self.set((item, args[0]), args[1])
         else:
             raise TypeError("Could not understand what to send")
 
-        result = self._send_variable(item)
+        result = self._send_variable(var)
         return result == 0
+
+    def __setitem__(self, key, item):
+        if isinstance(item, Variable):
+            result = self.send(item)
+        else:
+            result = self.send(key, item)
+
+        if not result:
+            raise IOError("An unspecified communication error occurred")
 
     cpdef _retrieve_variable_array(self, VariableRequest variable):
         cdef tifiles.FileContent file_content

@@ -49,11 +49,9 @@ One type of variable on the calculator is the *real* variable. This is simply a 
 
     calculator["real", "A"]
 
-You should see the number 42 printed in your terminal. Try storing different values to different variables and then retrieving them. The value of a real variable on your calculator can also be set with CyTI (this is a bit complicated right now and will be made simpler in the future):
+You should see the number 42 printed in your terminal. Try storing different values to different variables and then retrieving them. The value of a real variable on your calculator can also be set with CyTI:
 
-    import cyti.convert
-    b = cyti.convert.int_to_ti8xreal(-5.47, "B", calculator)
-    calculator.send(b)
+    calculator["real", "B"] = -5.47
 
 Now, take a look at the value of B on your calculator by pressing (ALPHA) (APPS) (ENTER).
 
