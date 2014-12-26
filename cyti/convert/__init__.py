@@ -88,6 +88,8 @@ def ti8xreallist_to_list(v):
 def list_to_ti8xreallist(l, name, calc):
     if not isinstance(l, list):
         raise TypeError("Argument cannot be converted to a TI Real List variable")
+    if len(l) > 999:
+        raise OverflowError("Argument has too many elements for a TI Real List")
 
     if isinstance(calc, cyti.Calculator):
         calc = calc.calc_model
