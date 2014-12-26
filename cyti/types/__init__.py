@@ -32,6 +32,20 @@ _num_list_conversion_table = {
     "6": "L₆",
  }
 
+def _create_request(calc, name, type_arg):
+    if isinstance(type_arg, str):
+        if not type_arg in ti8x_type_codes:
+            raise KeyError("The given variable type (%s) is not known" % type_arg)
+        type_arg = ti8x_type_codes[type_arg]
+
+    if type_arg == 0x00 and name == "theta":
+        name = "θ"
+
+    if type_arg == 0x01 and str(name) in _num_list_conversion_table:
+            name = _num_list_conversion_table[str(name)]
+
+    return core._create_variable_request(calc.calc_model, name, type_arg)
+
 def _create_ti8x_real_var(calc_model, name):
     return core._create_variable(calc_model, name, 0x00, 9)
 

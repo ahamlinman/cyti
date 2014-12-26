@@ -45,17 +45,17 @@ Now, try this to see what variables and apps are on your calculator:
     for index, var in enumerate(vars):
         print(index, var)
 
-Find one of the real variables and note the index value next to it. Let's assume for a moment that there's one at index 11. Take a look at its value on your calculator, then run this to see it printed in your terminal:
+One type of variable on the calculator is the *real* variable. This is simply a number stored in one of the A-Z (or theta) variables. Try storing 42 to A by going to the home screen of your calculator and pressing (4) (2) (STO>) (ALPHA) (MATH) (ENTER). CyTI gives you easy access to this value by running the following code:
 
-    calculator.get(vars[11])
+    calculator["real", "A"]
 
-Let's try sending a variable (this is a bit complicated right now and will be made simpler in the future):
+You should see the number 42 printed in your terminal. Try storing different values to different variables and then retrieving them. The value of a real variable on your calculator can also be set with CyTI (this is a bit complicated right now and will be made simpler in the future):
 
     import cyti.convert
-    a = cyti.convert.int_to_ti8xreal(42, "A", calculator)
-    calculator.send(a)
+    b = cyti.convert.int_to_ti8xreal(-5.47, "B", calculator)
+    calculator.send(b)
 
-Now, take a look at the value of A on your calculator.
+Now, take a look at the value of B on your calculator by pressing (ALPHA) (APPS) (ENTER).
 
 There are some other functions you can try as well:
 

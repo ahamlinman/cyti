@@ -24,7 +24,7 @@ from cyti.clibs cimport ticables, ticalcs, tifiles, ticonv, glib
 from cyti.types.core cimport *
 cimport cyti.types.core
 
-from cyti import convert
+from cyti import convert, types
 
 from libc.stdint cimport uint8_t, uint32_t
 from libc.stdlib cimport malloc, free
@@ -159,13 +159,16 @@ cdef class Calculator:
 
         return variables
 
-    def get(self, item):
+    def get(self, item, *args):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
-        request = None
         if isinstance(item, VariableRequest):
             request = item
+        elif isinstance(item, tuple):
+            request = types._create_request(self, item[1], item[0])
+        elif isinstance(item, str) and len(args) == 1:
+            return self.get((item, args[0]))
         else:
             raise TypeError("Could not understand what to retrieve")
 
@@ -177,6 +180,9 @@ cdef class Calculator:
                 return variables
         else:
             return None
+
+    def __getitem__(self, item):
+        return self.get(item)
 
     def send(self, item):
         if not self.is_ready():
