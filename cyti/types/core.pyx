@@ -59,9 +59,7 @@ cdef class Variable(VariableRequest):
             type_str = "type %d" % self.type_code
         return "<%s %s variable '%s'>" % (calc_str, type_str, self.name)
 
-cdef __create_initialized_var_type(tifiles.CalcModel calc_model, str name, int type_code):
-    v = VariableRequest()
-
+cdef __initialize_var_type(VariableRequest v, tifiles.CalcModel calc_model, str name, int type_code):
     v.calc_model = calc_model
 
     cdef bytes asc_name = name.encode('utf-16')[2:] + '\x00'.encode('utf-16-le')
@@ -86,10 +84,10 @@ cdef __create_initialized_var_type(tifiles.CalcModel calc_model, str name, int t
     v.attr = v.var_entry.attr = 0
     v.action = v.var_entry.action = 0
 
-    return v
-
 cpdef _create_variable_request(tifiles.CalcModel calc_model, str name, int type_code):
-    return __create_initialized_var_type(calc_model, name, type_code)
+    v = VariableRequest()
+    __initialize_var_type(v, calc_model, name, type_code)
+    return v
 
 cdef _varentry_to_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
     v = VariableRequest()
@@ -121,7 +119,8 @@ cdef _gnode_tree_to_request_array(glib.GNode* tree, tifiles.CalcModel calc_model
     return variables
 
 cpdef _create_variable(tifiles.CalcModel calc_model, str name, int type_code, int size):
-    v = Variable(__create_initialized_var_type(calc_model, name, type_code))
+    v = Variable()
+    __initialize_var_type(v, calc_model, name, type_code)
 
     v.size = v.var_entry.size = size
 
