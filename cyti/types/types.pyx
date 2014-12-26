@@ -59,7 +59,36 @@ cdef class Variable(VariableRequest):
             type_str = "type %d" % self.type_code
         return "<%s %s variable '%s'>" % (calc_str, type_str, self.name)
 
-cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
+cpdef _create_variable_request(tifiles.CalcModel calc_model, str name, int type_code):
+    v = VariableRequest()
+
+    v.calc_model = calc_model
+
+    cdef bytes asc_name = name.encode('utf-16')[2:] + '\x00'.encode('utf-16-le')
+    enc_name = ticonv.ticonv_charset_utf16_to_ti(calc_model, asc_name)
+    tok_name = ticonv.ticonv_varname_tokenize(calc_model, enc_name, type_code)
+
+    fmt_name = ticonv.ticonv_varname_to_utf8(calc_model, tok_name, type_code)
+    v.name = fmt_name.decode('utf-8')
+    strncpy(v.var_entry.name, tok_name, 1024)
+
+    glib.g_free(enc_name)
+    glib.g_free(tok_name)
+    glib.g_free(fmt_name)
+
+    v.folder = None
+    v.var_entry.folder[0] = 0
+
+    v.calc_model = calc_model
+
+    v.type_code = v.var_entry.type = type_code
+    v.size = v.var_entry.size = 0
+    v.attr = v.var_entry.attr = 0
+    v.action = v.var_entry.action = 0
+
+    return v
+
+cdef _varentry_to_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model):
     v = VariableRequest()
 
     v.var_entry = var_entry[0]
@@ -117,7 +146,7 @@ cdef _gnode_tree_to_request_array(glib.GNode* tree, tifiles.CalcModel calc_model
         for j in range(0, glib.g_node_n_children(parent)):
             child = glib.g_node_nth_child(parent, j)
             entry = <tifiles.VarEntry*>child.data
-            variables.append(_create_variable_request(entry, calc_model))
+            variables.append(_varentry_to_request(entry, calc_model))
     return variables
 
 cdef _file_content_to_variable_array(tifiles.FileContent file_content):

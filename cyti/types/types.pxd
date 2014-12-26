@@ -33,6 +33,6 @@ cdef class VariableRequest:
 cdef class Variable(VariableRequest):
     cdef public uint8_t[:] data
 
-cdef _create_variable_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model)
+cdef _varentry_to_request(tifiles.VarEntry* var_entry, tifiles.CalcModel calc_model)
 cdef _gnode_tree_to_request_array(glib.GNode* tree, tifiles.CalcModel calc_model)
 cdef _file_content_to_variable_array(tifiles.FileContent file_content)
