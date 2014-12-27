@@ -213,7 +213,7 @@ cdef class Calculator:
             if(types.ti8x_type_codes[var.type_code] != item[0]):
                 raise TypeError("Cannot assign %s to %s variable" % (str(type(args[0])), item[0]))
         elif(isinstance(item, str) and len(args) == 2):
-            return self.set((item, args[0]), args[1])
+            return self.send((item, args[0]), args[1])
         else:
             raise TypeError("Could not understand what to send")
 
