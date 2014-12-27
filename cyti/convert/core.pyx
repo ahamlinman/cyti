@@ -20,7 +20,7 @@
 from libc.stdint cimport uint8_t
 import math
 
-cpdef _real_frame_to_abs_int(uint8_t[:] frame):
+cpdef _real_frame_to_int(uint8_t[:] frame):
     num = 0
 
     for i in range(2, 9):
@@ -30,6 +30,7 @@ cpdef _real_frame_to_abs_int(uint8_t[:] frame):
 
     exp = frame[1] - 0x80
     num *= pow(10, -13 + exp)
+    num *= -1 if frame[0] & 0x80 else 1
 
     return num
 

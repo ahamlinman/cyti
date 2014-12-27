@@ -51,10 +51,7 @@ def ti8xreal_to_int(v):
     if v.type_code != 0x0:
         raise TypeError("Argument is not a TI Real variable")
 
-    val = core._real_frame_to_abs_int(v.data)
-    val *= -1 if v.data[0] & 0x80 else 1
-
-    return val
+    return core._real_frame_to_int(v.data)
 
 def int_to_ti8xreal(i, name, calc):
     if not isinstance(i, int) and not isinstance(i, float):
@@ -79,8 +76,7 @@ def ti8xreallist_to_list(v):
     for i in range(0, size):
         idx = i * 9 + 2
         frame = v.data[idx:idx+9]
-        val = core._real_frame_to_abs_int(frame)
-        val *= -1 if frame[0] & 0x80 else 1
+        val = core._real_frame_to_int(frame)
         vals.append(val)
 
     return vals
