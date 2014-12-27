@@ -68,3 +68,9 @@ def _create_ti8x_real_list_var(calc_model, name, num_elements):
         name = name.upper()
 
     return core._create_variable(calc_model, name, 0x01, size)
+
+def _create_ti8x_complex_var(calc_model, name):
+    if name == "theta":
+        name = "θ"
+
+    return core._create_variable(calc_model, name, 0x0C, 18)
