@@ -180,7 +180,7 @@ cdef class Calculator:
             if len(variables) == 1:
                 return convert.to_python(variables[0])
             else:
-                return variables
+                return [convert.to_python(v) for v in variables]
         else:
             return None
 
