@@ -184,9 +184,6 @@ cdef class Calculator:
         else:
             return None
 
-    def __getitem__(self, item):
-        return self.get(item)
-
     def delete(self, item, *args):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
@@ -195,11 +192,6 @@ cdef class Calculator:
 
         result = self._delete_variable(request)
         return result == 0
-
-    def __delitem__(self, item):
-        result = self.delete(item)
-        if not result:
-            raise IOError("An unspecified communication error occurred")
 
     def send(self, item, *args):
         if not self.is_ready():
@@ -219,15 +211,6 @@ cdef class Calculator:
 
         result = self._send_variable(var)
         return result == 0
-
-    def __setitem__(self, key, item):
-        if isinstance(item, Variable):
-            result = self.send(item)
-        else:
-            result = self.send(key, item)
-
-        if not result:
-            raise IOError("An unspecified communication error occurred")
 
     cpdef _retrieve_variable_array(self, VariableRequest variable):
         cdef tifiles.FileContent file_content
