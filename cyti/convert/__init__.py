@@ -32,6 +32,8 @@ def to_python(v):
             return ti8xreal_to_int(v)
         if v.type_code == 0x1: # Real List
             return ti8xreallist_to_list(v)
+        if v.type_code == 0x2: # Matrix
+            return ti8xmatrix_to_matrix(v)
         if v.type_code == 0xC: # Complex
             return ti8xcomplex_to_complex(v)
         if v.type_code == 0xD: # Complex List
@@ -56,6 +58,13 @@ def to_cyti(v, name, calc):
                 return list_to_ti8xcomplexlist(v, name, calc)
             else:
                 return list_to_ti8xreallist(v, name, calc)
+    except TypeError:
+        pass
+
+    # Matrix
+    try:
+        if not False in [[hasattr(n, "real") for n in row] for row in v]:
+            return matrix_to_ti8xmatrix(v, name, calc)
     except TypeError:
         pass
 
@@ -103,6 +112,42 @@ def list_to_ti8xreallist(l, name, calc):
     for i in range(0, len(l)):
         idx = i * 9 + 2
         v.data[idx:idx+9] = core._int_to_real_frame(l[i])
+
+    return v
+
+def ti8xmatrix_to_matrix(v):
+    if v.type_code != 0x2:
+        raise TypeError("Argument is not a TI Matrix variable")
+
+    cols = v.data[0]
+    rows = v.data[1]
+
+    vals = [[] for i in range(rows)]
+    for i in range(rows):
+        for j in range(cols):
+            idx = (i * cols + j) * 9 + 2
+            vals[i].append(core._real_frame_to_int(v.data[idx:idx+9]))
+
+    return vals
+
+def matrix_to_ti8xmatrix(m, name, calc):
+    rows = len(m)
+    cols = len(m[0])
+
+    if [len(row) for row in m].count(cols) != len(m):
+        raise TypeError("All rows must contain the same number of columns")
+
+    if isinstance(calc, cyti.Calculator):
+        calc = calc.calc_model
+
+    v = types._create_ti8x_matrix_var(calc, name, rows, cols)
+    v.data[0] = cols
+    v.data[1] = rows
+
+    for i in range(rows):
+        for j in range(cols):
+            idx = (i * cols + j) * 9 + 2
+            v.data[idx:idx+9] = core._int_to_real_frame(m[i][j])
 
     return v
 

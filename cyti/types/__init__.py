@@ -50,6 +50,9 @@ def _create_request(calc, name, type_arg):
     if type_arg == 0x01 or type_arg == 0x0D:
         name = __normalize_ti8x_list_name(name)
 
+    if type_arg == 0x02:
+        name = __normalize_ti8x_matrix_name(name)
+
     return core._create_variable_request(calc.calc_model, name, type_arg)
 
 def _create_ti8x_real_var(calc_model, name):
@@ -70,11 +73,16 @@ def _create_ti8x_complex_list_var(calc_model, name, num_elements):
     name = __normalize_ti8x_list_name(name)
     return core._create_variable(calc_model, name, 0x0D, size)
 
+def _create_ti8x_matrix_var(calc_model, name, rows, cols):
+    size = rows * cols * 9 + 2
+    name = __normalize_ti8x_matrix_name(name)
+    return core._create_variable(calc_model, name, 0x02, size)
+
 def __normalize_ti8x_number_name(name):
     if name == "theta":
         return "θ"
     elif len(name) > 1:
-        raise TypeError("Number variable names must consist of one letter or 'theta'")
+        raise IndexError("Number variable names must consist of one letter or 'theta'")
 
     return name.upper()
 
@@ -85,3 +93,10 @@ def __normalize_ti8x_list_name(name):
         raise IndexError("Numbered list names must be in the range 1-6")
 
     return name.upper()
+
+def __normalize_ti8x_matrix_name(name):
+    name = name.strip("[]").upper()
+    if not name in "ABCDEFGHIJ":
+        raise IndexError("Matrix name must be in the range [A]-[J]")
+
+    return "[%s]" % name
