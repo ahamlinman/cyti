@@ -167,25 +167,27 @@ cdef class Calculator:
         else:
             raise TypeError("Could not understand what to retrieve")
 
-    def get(self, item, *args):
+    def get(self, item, *args, **kwargs):
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
         if item in types.pseudotypes:
             for t in types.pseudotypes[item]:
-                result = self.get(t, *args)
+                result = self.get(t, *args, **kwargs)
                 if result:
                     return result
             return None
+
+        raw = ("raw" in kwargs and kwargs["raw"])
 
         request = self.__args_to_var_request(item, *args)
 
         variables = self._retrieve_variable_array(request)
         if variables is not None:
             if len(variables) == 1:
-                return convert.to_python(variables[0])
+                return convert.to_python(variables[0]) if not raw else variables[0]
             else:
-                return [convert.to_python(v) for v in variables]
+                return [convert.to_python(v) for v in variables] if not raw else variables
         else:
             return None
 
