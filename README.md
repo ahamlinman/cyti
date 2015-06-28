@@ -6,7 +6,7 @@ CyTI (pronounced "city") is an in-development Cython module for linking with Tex
 Development Status
 ==================
 
-I consider CyTI to be alpha-quality software. It is largely undocumented and untested, the API is somewhat unstable, and I would not recommend its use in serious software projects for the time being. For more information, see the [Development Status][] page on the wiki.
+I consider CyTI to be alpha-quality software. It is largely undocumented and untested, the API may be unstable, and I would not recommend its use in serious software projects for the time being. For more information, see the [Development Status][] page on the wiki.
 
 Basic Instructions
 ==================
@@ -45,15 +45,21 @@ Now, try this to see what variables and apps are on your calculator:
     for index, var in enumerate(vars):
         print(index, var)
 
-One type of variable on the calculator is the *real* variable. This is simply a number stored in one of the A-Z (or theta) variables. Try storing 42 to A by going to the home screen of your calculator and pressing (4) (2) (STO>) (ALPHA) (MATH) (ENTER). CyTI gives you easy access to this value by running the following code:
+The calculator is capable of storing real or complex numbers in the variables A-Z and theta. Try storing the number 42 to A by going to the home screen of your calculator and pressing (4) (2) (STO>) (ALPHA) (MATH) (ENTER). CyTI gives you easy access to this value by running the following code:
 
-    calculator["real", "A"]
+    calculator.get("number", "A")
 
-You should see the number 42 printed in your terminal. Try storing different values to different variables and then retrieving them. The value of a real variable on your calculator can also be set with CyTI:
+You should see the number 42 printed in your terminal. Try storing different values to different variables and then retrieving them. Be sure to try complex numbers as well (e.g. 1+2i: (1) (+) (2) (2ND) (.) (STO>) ...).
 
-    calculator["real", "B"] = -5.47
+The values of these variables on your calculator can also be set with CyTI:
 
-Now, take a look at the value of B on your calculator by pressing (ALPHA) (APPS) (ENTER).
+    calculator.send("number", "B", -5.47)
+
+Now, take a look at the value of B on your calculator by pressing (ALPHA) (APPS) (ENTER). You can also easily set the values of list variables:
+
+	calculator.send("list", 1, [1, 2, 3])
+
+Press (2ND) (1) (ENTER) to see this list appear on your calculator.
 
 There are some other functions you can try as well:
 
