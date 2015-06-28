@@ -36,6 +36,8 @@ def to_python(v):
         return ti8xreallist_to_list(v)
     if v.type_code == 0xC:
         return ti8xcomplex_to_complex(v)
+    if v.type_code == 0xD:
+        return ti8xcomplexlist_to_list(v)
 
     return v
 
@@ -43,7 +45,10 @@ def to_cyti(v, name, calc):
     if isinstance(v, int) or isinstance(v, float):
         return int_to_ti8xreal(v, name, calc)
     elif isinstance(v, list):
-        return list_to_ti8xreallist(v, name, calc)
+        if True in [isinstance(i, complex) for i in v]:
+            return list_to_ti8xcomplexlist(v, name, calc)
+        else:
+            return list_to_ti8xreallist(v, name, calc)
     elif isinstance(v, complex):
         return complex_to_ti8xcomplex(v, name, calc)
     else:
@@ -125,5 +130,46 @@ def complex_to_ti8xcomplex(c, name, calc):
     v.data[9:18] = core._int_to_real_frame(c.imag)
     v.data[0] |= 0xC
     v.data[9] |= 0xC
+
+    return v
+
+def ti8xcomplexlist_to_list(v):
+    if not isinstance(v, Variable):
+        raise TypeError("Argument is not a CyTI variable")
+    if v.type_code != 0xD:
+        raise TypeError("Argument is not a TI Complex List variable")
+
+    vals = []
+    size = v.data[1] * 256 + v.data[0]
+
+    for i in range(0, size):
+        idx = i * 18 + 2
+        frame = v.data[idx:idx+18]
+        real_part = core._real_frame_to_int(frame[0:9])
+        imag_part = core._real_frame_to_int(frame[9:18])
+        val = complex(real_part, imag_part)
+        vals.append(val)
+
+    return vals
+
+def list_to_ti8xcomplexlist(l, name, calc):
+    if not isinstance(l, list):
+        raise TypeError("Argument cannot be converted to a TI Complex List variable")
+    if len(l) > 999:
+        raise OverflowError("Argument has too many elements for a TI Complex List")
+
+    if isinstance(calc, cyti.Calculator):
+        calc = calc.calc_model
+
+    v = types._create_ti8x_complex_list_var(calc, name, len(l))
+    v.data[0:2] = array("B", [len(l) % 256, len(l) // 256])
+
+    for i in range(0, len(l)):
+        idx = i * 18 + 2
+        frame = v.data[idx:idx+18]
+        frame[0:9] = core._int_to_real_frame(l[i].real)
+        frame[9:18] = core._int_to_real_frame(l[i].imag)
+        frame[0] |= 0x0C
+        frame[9] |= 0x0C
 
     return v

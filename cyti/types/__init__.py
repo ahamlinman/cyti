@@ -41,7 +41,7 @@ def _create_request(calc, name, type_arg):
     if type_arg == 0x00 and name == "theta":
         name = "θ"
 
-    if type_arg == 0x01:
+    if type_arg == 0x01 or type_arg == 0x0D:
         if str(name) in _num_list_conversion_table:
             name = _num_list_conversion_table[str(name)]
         elif not isinstance(name, str):
@@ -74,3 +74,15 @@ def _create_ti8x_complex_var(calc_model, name):
         name = "θ"
 
     return core._create_variable(calc_model, name, 0x0C, 18)
+
+def _create_ti8x_complex_list_var(calc_model, name, num_elements):
+    size = num_elements * 18 + 2
+
+    if str(name) in _num_list_conversion_table:
+        name = _num_list_conversion_table[str(name)]
+    elif not isinstance(name, str):
+        raise IndexError("Numbered lists must be in the range 1-6")
+    else:
+        name = name.upper()
+
+    return core._create_variable(calc_model, name, 0x0D, size)
