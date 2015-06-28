@@ -62,17 +62,11 @@ cdef class Variable(VariableRequest):
 cdef __initialize_var_type(VariableRequest v, tifiles.CalcModel calc_model, str name, int type_code):
     v.calc_model = calc_model
 
-    cdef bytes asc_name = name.encode('utf-16')[2:] + '\x00'.encode('utf-16-le')
-    enc_name = ticonv.ticonv_charset_utf16_to_ti(calc_model, asc_name)
-    tok_name = ticonv.ticonv_varname_tokenize(calc_model, enc_name, type_code)
-
-    fmt_name = ticonv.ticonv_varname_to_utf8(calc_model, tok_name, type_code)
-    v.name = fmt_name.decode('utf-8')
-    strncpy(v.var_entry.name, tok_name, 1024)
-
-    glib.g_free(enc_name)
-    glib.g_free(tok_name)
-    glib.g_free(fmt_name)
+    v.name = unicode(name)
+    cdef bytes enc_name = name.encode('utf-16')[2:] + '\x00'.encode('utf-16-le')
+    ti_name = ticonv.ticonv_charset_utf16_to_ti(calc_model, enc_name)
+    strncpy(v.var_entry.name, ti_name, 1024)
+    glib.g_free(ti_name)
 
     v.folder = None
     v.var_entry.folder[0] = 0
