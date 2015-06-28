@@ -162,7 +162,7 @@ cdef class Calculator:
     def __args_to_var_request(self, item, *args):
         if isinstance(item, VariableRequest):
             return item
-        elif isinstance(item, (str, int)) and len(args) == 1:
+        elif len(args) == 1:
             return types._create_request(self, args[0], item)
         else:
             raise TypeError("Could not understand what to retrieve")
@@ -214,7 +214,7 @@ cdef class Calculator:
         var = None
         if(isinstance(item, Variable)):
             var = item
-        elif(isinstance(item, (str, int)) and len(args) == 2):
+        elif len(args) == 2:
             var = convert.to_cyti(args[1], args[0], self)
             type_name = types.ti8x_type_codes[var.type_code]
             if(type_name != item and var.type_code != item):
