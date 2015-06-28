@@ -22,6 +22,12 @@
 from cyti.types.core import *
 from cyti.types import core
 
+# CyTI pseudotypes
+pseudotypes = {
+    "number": ["real", "complex"],
+    "list": ["real_list", "complex_list"]
+}
+
 # Correct list names for L1-L6 on TI-8x
 _num_list_conversion_table = {
     "1": "L₁",

@@ -25,7 +25,7 @@ from libc.string cimport strncpy
 # Variable type codes
 ti8x_type_codes = {
     0x00: "real",
-    0x01: "list",
+    0x01: "real_list",
     0x02: "matrix",
     0x03: "y_var",
     0x04: "string",

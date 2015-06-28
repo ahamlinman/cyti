@@ -171,6 +171,13 @@ cdef class Calculator:
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
+        if item in types.pseudotypes:
+            for t in types.pseudotypes[item]:
+                result = self.get(t, *args)
+                if result:
+                    return result
+            return None
+
         request = self.__args_to_var_request(item, *args)
 
         variables = self._retrieve_variable_array(request)
@@ -186,6 +193,13 @@ cdef class Calculator:
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
+        if item in types.pseudotypes:
+            for t in types.pseudotypes[item]:
+                result = self.delete(t, *args)
+                if result:
+                    return result
+            return False
+
         request = self.__args_to_var_request(item, *args)
 
         result = self._delete_variable(request)
@@ -198,12 +212,12 @@ cdef class Calculator:
         var = None
         if(isinstance(item, Variable)):
             var = item
-        elif(isinstance(item, tuple) and len(item) == 2 and len(args) == 1):
-            var = convert.to_cyti(args[0], item[1], self)
-            if(types.ti8x_type_codes[var.type_code] != item[0]):
-                raise TypeError("Cannot assign %s to %s variable" % (str(type(args[0])), item[0]))
-        elif(isinstance(item, str) and len(args) == 2):
-            return self.send((item, args[0]), args[1])
+        elif(isinstance(item, (str, int)) and len(args) == 2):
+            var = convert.to_cyti(args[1], args[0], self)
+            type_name = types.ti8x_type_codes[var.type_code]
+            if(type_name != item and var.type_code != item):
+                if not(item in types.pseudotypes and True in [t == type_name for t in types.pseudotypes[item]]):
+                    raise TypeError("Cannot assign %s to %s variable" % (str(type(args[1])), item))
         else:
             raise TypeError("Could not understand what to send")
 
