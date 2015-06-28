@@ -39,56 +39,49 @@ _num_list_conversion_table = {
  }
 
 def _create_request(calc, name, type_arg):
-    if isinstance(type_arg, str):
+    if not isinstance(type_arg, int): # type_arg needs to be an int by the time we get to C
         if not type_arg in ti8x_type_codes:
             raise KeyError("The given variable type (%s) is not known" % type_arg)
         type_arg = ti8x_type_codes[type_arg]
 
-    if type_arg == 0x00 and name == "theta":
-        name = "θ"
+    if type_arg == 0x00 or type_arg == 0x0C:
+        name = __normalize_ti8x_number_name(name)
 
     if type_arg == 0x01 or type_arg == 0x0D:
-        if str(name) in _num_list_conversion_table:
-            name = _num_list_conversion_table[str(name)]
-        elif not isinstance(name, str):
-            raise IndexError("Numbered lists must be in the range 1-6")
-        else:
-            name = name.upper()
+        name = __normalize_ti8x_list_name(name)
 
     return core._create_variable_request(calc.calc_model, name, type_arg)
 
 def _create_ti8x_real_var(calc_model, name):
-    if name == "theta":
-        name = "θ"
-
+    name = __normalize_ti8x_number_name(name)
     return core._create_variable(calc_model, name, 0x00, 9)
 
 def _create_ti8x_real_list_var(calc_model, name, num_elements):
     size = num_elements * 9 + 2
-
-    if str(name) in _num_list_conversion_table:
-        name = _num_list_conversion_table[str(name)]
-    elif not isinstance(name, str):
-        raise IndexError("Numbered lists must be in the range 1-6")
-    else:
-        name = name.upper()
-
+    name = __normalize_ti8x_list_name(name)
     return core._create_variable(calc_model, name, 0x01, size)
 
 def _create_ti8x_complex_var(calc_model, name):
-    if name == "theta":
-        name = "θ"
-
+    name = __normalize_ti8x_number_name(name)
     return core._create_variable(calc_model, name, 0x0C, 18)
 
 def _create_ti8x_complex_list_var(calc_model, name, num_elements):
     size = num_elements * 18 + 2
+    name = __normalize_ti8x_list_name(name)
+    return core._create_variable(calc_model, name, 0x0D, size)
 
+def __normalize_ti8x_number_name(name):
+    if name == "theta":
+        return "θ"
+    elif len(name) > 1:
+        raise TypeError("Number variable names must consist of one letter or 'theta'")
+
+    return name.upper()
+
+def __normalize_ti8x_list_name(name):
     if str(name) in _num_list_conversion_table:
         name = _num_list_conversion_table[str(name)]
-    elif not isinstance(name, str):
-        raise IndexError("Numbered lists must be in the range 1-6")
-    else:
-        name = name.upper()
+    elif str(name).isnumeric():
+        raise IndexError("Numbered list names must be in the range 1-6")
 
-    return core._create_variable(calc_model, name, 0x0D, size)
+    return name.upper()
