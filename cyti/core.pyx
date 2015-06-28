@@ -162,10 +162,8 @@ cdef class Calculator:
     def __args_to_var_request(self, item, *args):
         if isinstance(item, VariableRequest):
             return item
-        elif isinstance(item, tuple):
-            return types._create_request(self, item[1], item[0])
-        elif isinstance(item, str) and len(args) == 1:
-            return self.__args_to_var_request((item, args[0]))
+        elif isinstance(item, (str, int)) and len(args) == 1:
+            return types._create_request(self, args[0], item)
         else:
             raise TypeError("Could not understand what to retrieve")
 
