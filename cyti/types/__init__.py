@@ -22,6 +22,8 @@
 from cyti.types.core import *
 from cyti.types import core
 
+import cyti
+
 # CyTI pseudotypes for TI-8x
 ti8x_pseudotypes = {
     "number": ["real", "complex"],
@@ -38,11 +40,14 @@ _ti8x_num_list_conversion_table = {
     "6": "L₆",
  }
 
-def _create_request(calc, name, type_arg):
+def _create_request(calc, type_arg, name):
     if not isinstance(type_arg, int): # type_arg needs to be an int by the time we get to C
         if not type_arg in ti8x_type_codes:
             raise KeyError("The given variable type (%s) is not known" % type_arg)
         type_arg = ti8x_type_codes[type_arg]
+
+    if isinstance(calc, cyti.Calculator):
+        calc = calc.calc_model
 
     if type_arg == 0x00 or type_arg == 0x0C:
         name = __normalize_ti8x_number_name(name)
@@ -53,7 +58,7 @@ def _create_request(calc, name, type_arg):
     if type_arg == 0x02:
         name = __normalize_ti8x_matrix_name(name)
 
-    return core._create_variable_request(calc.calc_model, name, type_arg)
+    return core._create_variable_request(calc, name, type_arg)
 
 def _create_ti8x_real_var(calc_model, name):
     name = __normalize_ti8x_number_name(name)

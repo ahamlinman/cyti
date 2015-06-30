@@ -163,7 +163,7 @@ cdef class Calculator:
         if isinstance(item, VariableRequest):
             return item
         elif len(args) == 1:
-            return types._create_request(self, args[0], item)
+            return types._create_request(self, item, args[0])
         else:
             raise TypeError("Could not understand what to retrieve")
 
