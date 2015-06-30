@@ -29,15 +29,15 @@ import cyti
 def to_python(v):
     try:
         if v.type_code == 0x0: # Real
-            return ti8xreal_to_int(v)
+            return _ti8xreal_to_int(v)
         if v.type_code == 0x1: # Real List
-            return ti8xreallist_to_list(v)
+            return _ti8xreallist_to_list(v)
         if v.type_code == 0x2: # Matrix
-            return ti8xmatrix_to_matrix(v)
+            return _ti8xmatrix_to_matrix(v)
         if v.type_code == 0xC: # Complex
-            return ti8xcomplex_to_complex(v)
+            return _ti8xcomplex_to_complex(v)
         if v.type_code == 0xD: # Complex List
-            return ti8xcomplexlist_to_list(v)
+            return _ti8xcomplexlist_to_list(v)
     except Exception:
         raise TypeError("Unable to convert to Python type")
 
@@ -47,36 +47,36 @@ def to_cyti(v, name, calc):
     # Real or complex number
     if hasattr(v, "real"):
         if hasattr(v, "imag"):
-            return complex_to_ti8xcomplex(v, name, calc)
+            return _complex_to_ti8xcomplex(v, name, calc)
         else:
-            return int_to_ti8xreal(v, name, calc)
+            return _int_to_ti8xreal(v, name, calc)
 
     # Real or complex list
     try:
         if not False in [hasattr(i, "real") for i in v]:
             if True in [hasattr(i, "imag") for i in v]:
-                return list_to_ti8xcomplexlist(v, name, calc)
+                return _list_to_ti8xcomplexlist(v, name, calc)
             else:
-                return list_to_ti8xreallist(v, name, calc)
+                return _list_to_ti8xreallist(v, name, calc)
     except TypeError:
         pass
 
     # Matrix
     try:
         if not False in [[hasattr(n, "real") for n in row] for row in v]:
-            return matrix_to_ti8xmatrix(v, name, calc)
+            return _matrix_to_ti8xmatrix(v, name, calc)
     except TypeError:
         pass
 
     raise TypeError("Unable to convert the given argument")
 
-def ti8xreal_to_int(v):
+def _ti8xreal_to_int(v):
     if v.type_code != 0x0:
         raise TypeError("Argument is not a TI Real variable")
 
     return core._real_frame_to_int(v.data)
 
-def int_to_ti8xreal(i, name, calc):
+def _int_to_ti8xreal(i, name, calc):
     if isinstance(calc, cyti.Calculator):
         calc = calc.calc_model
 
@@ -84,7 +84,7 @@ def int_to_ti8xreal(i, name, calc):
     v.data[:] = core._int_to_real_frame(i)
     return v
 
-def ti8xreallist_to_list(v):
+def _ti8xreallist_to_list(v):
     if v.type_code != 0x1:
         raise TypeError("Argument is not a TI Real List variable")
 
@@ -99,7 +99,7 @@ def ti8xreallist_to_list(v):
 
     return vals
 
-def list_to_ti8xreallist(l, name, calc):
+def _list_to_ti8xreallist(l, name, calc):
     if len(l) > 999:
         raise OverflowError("Argument has too many elements for a TI Real List")
 
@@ -115,7 +115,7 @@ def list_to_ti8xreallist(l, name, calc):
 
     return v
 
-def ti8xmatrix_to_matrix(v):
+def _ti8xmatrix_to_matrix(v):
     if v.type_code != 0x2:
         raise TypeError("Argument is not a TI Matrix variable")
 
@@ -130,7 +130,7 @@ def ti8xmatrix_to_matrix(v):
 
     return vals
 
-def matrix_to_ti8xmatrix(m, name, calc):
+def _matrix_to_ti8xmatrix(m, name, calc):
     rows = len(m)
     cols = len(m[0])
 
@@ -151,7 +151,7 @@ def matrix_to_ti8xmatrix(m, name, calc):
 
     return v
 
-def ti8xcomplex_to_complex(v):
+def _ti8xcomplex_to_complex(v):
     if v.type_code != 0xC:
         raise TypeError("Argument is not a TI Complex variable")
 
@@ -159,7 +159,7 @@ def ti8xcomplex_to_complex(v):
     imag_part = core._real_frame_to_int(v.data[9:18])
     return complex(real_part, imag_part)
 
-def complex_to_ti8xcomplex(c, name, calc):
+def _complex_to_ti8xcomplex(c, name, calc):
     if isinstance(calc, cyti.Calculator):
         calc = calc.calc_model
 
@@ -171,7 +171,7 @@ def complex_to_ti8xcomplex(c, name, calc):
 
     return v
 
-def ti8xcomplexlist_to_list(v):
+def _ti8xcomplexlist_to_list(v):
     if v.type_code != 0xD:
         raise TypeError("Argument is not a TI Complex List variable")
 
@@ -188,7 +188,7 @@ def ti8xcomplexlist_to_list(v):
 
     return vals
 
-def list_to_ti8xcomplexlist(l, name, calc):
+def _list_to_ti8xcomplexlist(l, name, calc):
     if len(l) > 999:
         raise OverflowError("Argument has too many elements for a TI Complex List")
 
