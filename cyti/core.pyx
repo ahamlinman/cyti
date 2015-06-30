@@ -171,8 +171,8 @@ cdef class Calculator:
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
-        if item in types.pseudotypes:
-            for t in types.pseudotypes[item]:
+        if item in types.ti8x_pseudotypes:
+            for t in types.ti8x_pseudotypes[item]:
                 result = self.get(t, *args, **kwargs)
                 if result:
                     return result
@@ -195,8 +195,8 @@ cdef class Calculator:
         if not self.is_ready():
             raise Exception("The calculator is not ready")
 
-        if item in types.pseudotypes:
-            for t in types.pseudotypes[item]:
+        if item in types.ti8x_pseudotypes:
+            for t in types.ti8x_pseudotypes[item]:
                 result = self.delete(t, *args)
                 if result:
                     return result
@@ -218,7 +218,7 @@ cdef class Calculator:
             var = convert.to_cyti(args[1], args[0], self)
             type_name = types.ti8x_type_codes[var.type_code]
             if(type_name != item and var.type_code != item):
-                if not(item in types.pseudotypes and True in [t == type_name for t in types.pseudotypes[item]]):
+                if not(item in types.ti8x_pseudotypes and True in [t == type_name for t in types.ti8x_pseudotypes[item]]):
                     raise TypeError("Cannot assign %s to %s variable" % (str(type(args[1])), item))
         else:
             raise TypeError("Could not understand what to send")

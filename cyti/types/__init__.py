@@ -22,14 +22,14 @@
 from cyti.types.core import *
 from cyti.types import core
 
-# CyTI pseudotypes
-pseudotypes = {
+# CyTI pseudotypes for TI-8x
+ti8x_pseudotypes = {
     "number": ["real", "complex"],
     "list": ["real_list", "complex_list"]
 }
 
 # Correct list names for L1-L6 on TI-8x
-_num_list_conversion_table = {
+_ti8x_num_list_conversion_table = {
     "1": "L₁",
     "2": "L₂",
     "3": "L₃",
@@ -87,8 +87,8 @@ def __normalize_ti8x_number_name(name):
     return name.upper()
 
 def __normalize_ti8x_list_name(name):
-    if str(name) in _num_list_conversion_table:
-        name = _num_list_conversion_table[str(name)]
+    if str(name) in _ti8x_num_list_conversion_table:
+        name = _ti8x_num_list_conversion_table[str(name)]
     elif str(name).isnumeric():
         raise IndexError("Numbered list names must be in the range 1-6")
 

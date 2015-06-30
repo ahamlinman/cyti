@@ -22,7 +22,7 @@ from cyti.types.core cimport *
 from cython cimport view
 from libc.string cimport strncpy
 
-# Variable type codes
+# TI-8x variable type codes
 ti8x_type_codes = {
     0x00: "real",
     0x01: "real_list",
