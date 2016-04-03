@@ -46,7 +46,7 @@ def to_python(v):
 def to_cyti(v, name, calc):
     # Real or complex number
     if hasattr(v, "real"):
-        if hasattr(v, "imag"):
+        if getattr(v, "imag"):
             return _complex_to_ti8xcomplex(v, name, calc)
         else:
             return _int_to_ti8xreal(v, name, calc)
@@ -54,7 +54,7 @@ def to_cyti(v, name, calc):
     # Real or complex list
     try:
         if not False in [hasattr(i, "real") for i in v]:
-            if True in [hasattr(i, "imag") for i in v]:
+            if True in [getattr(i, "imag") for i in v]:
                 return _list_to_ti8xcomplexlist(v, name, calc)
             else:
                 return _list_to_ti8xreallist(v, name, calc)
