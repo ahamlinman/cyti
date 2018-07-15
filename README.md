@@ -1,12 +1,15 @@
+**CyTI is not in active development.** At this point, it is solely kept on GitHub in the hope that someone might find it interesting and move its ideas forward. For information about the features it currently supports, see the [Development Status][] page on the wiki.
+
+**Why?** Realistically, I'm not involved in the TI calculator scene anymore. I don't have any hardware to test with beyond a TI-84+ Silver Edition, which has largely been superseded by the new CE models. CyTI itself is alpha-quality, and moving it beyond this would require investments that I'm honestly not likely to make.
+
+Thank you for your interest, and sorry for the bad news. The CyTI README continues below, but please note that parts of it may become outdated over time.
+
+---
+
 What is CyTI?
 =============
 
-CyTI (pronounced "city") is an in-development Cython module for linking with Texas Instruments (TI) graphing calculators. It presents a high-level interface to the [TiLP Framework][], including the ticables, ticalcs, tifiles, and ticonv libraries.
-
-Development Status
-==================
-
-I consider CyTI to be alpha-quality software. It is largely undocumented and untested, the API may be unstable, and I would not recommend its use in serious software projects for the time being. For more information, see the [Development Status][] page on the wiki.
+CyTI (pronounced "city") is a Cython module for linking with Texas Instruments (TI) graphing calculators. It presents a high-level interface to the [TiLP Framework][], including the ticables, ticalcs, tifiles, and ticonv libraries.
 
 Basic Instructions
 ==================
@@ -65,11 +68,6 @@ There are some other functions you can try as well:
 
     calculator.is_ready()        # Returns True or False
     calculator.get_id()          # Returns the unique ID reported by the calculator
-
-I'm interested! How can I help?
--------------------------------
-
-At the moment, this is still largely a work in progress, and there are certain basic details that still need to be worked out. However, if you have any ideas, please feel free to share. The code is free, so do take it if you think that you can make it more useful.
 
 <!-- Links -->
 [Cython]: http://cython.org
